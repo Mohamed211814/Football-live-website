@@ -1,6 +1,6 @@
 import DateBar from "./components/DateBar";
 import DayTabs from "./components/DayTabs";
-import MatchesList from "./components/MatchesList";
+import MatchList from "./components/MatchList";
 import { fetchFixtures } from "./utils/api-football";
 
 export default async function Home() {
@@ -51,7 +51,7 @@ export default async function Home() {
         <DateBar />
 
         {/* League sections */}
-        <MatchesList leagues={matchesData} />
+        <MatchList leagues={matchesData} />
       </div>
     </div>
   );

@@ -1,7 +1,10 @@
 import { League } from "../types";
 
+// Legacy mock data - the app now uses API-Football for live data.
+// This file is kept for reference/fallback purposes.
 export const matchesData: League[] = [
   {
+    id: 2,
     name: "دوري أبطال أوروبا",
     matches: [
       {
@@ -27,6 +30,7 @@ export const matchesData: League[] = [
     ],
   },
   {
+    id: 39,
     name: "الدوري الإنجليزي الممتاز",
     matches: [
       {
@@ -52,6 +56,7 @@ export const matchesData: League[] = [
     ],
   },
   {
+    id: 140,
     name: "الدوري الإسباني",
     matches: [
       {
@@ -68,7 +73,8 @@ export const matchesData: League[] = [
     ],
   },
   {
-    name: "الدوري الإيطالي",
+    id: 135,
+    name: "الدوري الإيطالي الدرجة الأولى",
     matches: [
       {
         id: 6,
@@ -78,7 +84,7 @@ export const matchesData: League[] = [
         awayScore: 2,
         time: "17:00",
         status: "finished",
-        league: "الدوري الإيطالي",
+        league: "الدوري الإيطالي الدرجة الأولى",
         channel: "beIN Sports 6",
       },
       {
@@ -87,12 +93,13 @@ export const matchesData: League[] = [
         awayTeam: "نابولي",
         time: "22:00",
         status: "upcoming",
-        league: "الدوري الإيطالي",
+        league: "الدوري الإيطالي الدرجة الأولى",
         channel: "beIN Sports 7",
       },
     ],
   },
   {
+    id: 307,
     name: "الدوري السعودي",
     matches: [
       {
