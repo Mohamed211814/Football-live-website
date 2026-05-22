@@ -8,6 +8,8 @@ export interface Match {
   status: "live" | "upcoming" | "finished";
   league: string;
   channel: string;
+  homeLogo?: string;
+  awayLogo?: string;
 }
 
 export interface League {

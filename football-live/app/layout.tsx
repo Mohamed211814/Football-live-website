@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const notoArabic = Noto_Sans_Arabic({
   subsets: ["arabic"],
@@ -29,8 +31,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={`${notoArabic.variable}`}>
-      <body className="min-h-screen bg-[#f0f0f0] font-arabic antialiased">
-        {children}
+      <body className="min-h-screen bg-[#f0f0f0] font-arabic antialiased flex flex-col">
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

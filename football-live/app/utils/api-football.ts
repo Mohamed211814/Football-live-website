@@ -64,6 +64,8 @@ export async function fetchFixtures(date: Date = new Date()): Promise<League[]> 
         id: fixture.fixture.id,
         homeTeam: fixture.teams.home.name,
         awayTeam: fixture.teams.away.name,
+        homeLogo: fixture.teams.home.logo,
+        awayLogo: fixture.teams.away.logo,
         homeScore: fixture.goals.home !== null ? fixture.goals.home : undefined,
         awayScore: fixture.goals.away !== null ? fixture.goals.away : undefined,
         time: matchStatus === 'live' ? String(fixture.fixture.status.elapsed) + "'" : matchTime,
