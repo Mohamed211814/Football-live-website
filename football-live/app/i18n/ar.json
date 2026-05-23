@@ -9,14 +9,14 @@
     "matches": "مباريات"
   },
   "header": {
-    "title": "Yacine TV",
-    "subtitle": "ياسين تيفي مباريات اليوم بث مباشر",
+    "title": "Kooraza",
+    "subtitle": "Kooraza مباريات اليوم بث مباشر",
     "todaysMatches": "مباريات اليوم",
     "news": "أخبار"
   },
   "footer": {
-    "copyright": "جميع الحقوق محفوظة © {year} | Yacine TV",
-    "about": "ياسين تيفي - مشاهدة مباريات اليوم بث مباشر",
+    "copyright": "جميع الحقوق محفوظة © {year} | Kooraza",
+    "about": "Kooraza - مشاهدة مباريات اليوم بث مباشر",
     "streamLabel": "البث المباشر للمباريات"
   },
   "home": {

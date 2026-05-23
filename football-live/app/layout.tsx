@@ -21,12 +21,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Yacine TV | ياسين تيفي - مباريات اليوم بث مباشر",
+  title: "Kooraza - مباريات اليوم بث مباشر",
   description:
     "Watch today's live football matches free. Full schedule with scores, lineups, and events. | مشاهدة مباريات اليوم بث مباشر مجاناً.",
-  keywords: "football live, مباريات اليوم, بث مباشر, ياسين تيفي, كرة القدم",
+  keywords: "football live, مباريات اليوم, بث مباشر, Kooraza, كرة القدم",
   openGraph: {
-    title: "Yacine TV | ياسين تيفي",
+    title: "Kooraza",
     description: "Live football matches today / مباريات اليوم بث مباشر",
     locale: "ar_AR",
     type: "website",

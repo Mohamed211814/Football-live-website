@@ -9,14 +9,14 @@
     "matches": "matches"
   },
   "header": {
-    "title": "Yacine TV",
+    "title": "Kooraza",
     "subtitle": "Watch Today's Live Matches",
     "todaysMatches": "Today's Matches",
     "news": "News"
   },
   "footer": {
-    "copyright": "All Rights Reserved © {year} | Yacine TV",
-    "about": "Yacine TV - Watch Today's Live Matches",
+    "copyright": "All Rights Reserved © {year} | Kooraza",
+    "about": "Kooraza - Watch Today's Live Matches",
     "streamLabel": "Live Football Streaming"
   },
   "home": {
