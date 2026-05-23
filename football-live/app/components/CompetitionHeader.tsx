@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useLanguage } from "../context/LanguageContext";
 
 interface CompetitionHeaderProps {
   title: string;
@@ -8,12 +11,14 @@ interface CompetitionHeaderProps {
 }
 
 export default function CompetitionHeader({ title, logoUrl, matchCount, liveCount }: CompetitionHeaderProps) {
+  const { t, isRTL } = useLanguage();
+
   return (
     <div 
-      className="flex items-center justify-between px-3 md:px-4 py-2.5 md:py-3 bg-white border-b border-gray-200 border-r-[3px] border-r-[#8B1E1E]"
-      dir="rtl"
+      className={`flex items-center justify-between px-3 md:px-4 py-2.5 md:py-3 bg-white border-b border-gray-200 ${isRTL ? 'border-r-[3px] border-r-[#8B1E1E]' : 'border-l-[3px] border-l-[#8B1E1E]'}`}
+      dir={isRTL ? "rtl" : "ltr"}
     >
-      {/* Right side: logo + title */}
+      {/* Right side (RTL) / Left side (LTR): logo + title */}
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
         {/* League logo */}
         {logoUrl ? (
@@ -40,14 +45,14 @@ export default function CompetitionHeader({ title, logoUrl, matchCount, liveCoun
         {liveCount > 0 && (
           <span className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 font-semibold px-2 py-0.5 rounded-full border border-red-100 shrink-0">
             <span className="live-dot w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
-            {liveCount} مباشر
+            {liveCount} {t.match.liveCount}
           </span>
         )}
       </div>
       
-      {/* Left side: match count */}
-      <div className="flex items-center gap-2 text-[11px] md:text-xs text-gray-400 shrink-0 mr-2">
-        <span>{matchCount} مباريات</span>
+      {/* Left side (RTL) / Right side (LTR): match count */}
+      <div className={`flex items-center gap-2 text-[11px] md:text-xs text-gray-400 shrink-0 ${isRTL ? 'mr-2' : 'ml-2'}`}>
+        <span>{matchCount} {t.common.matches}</span>
       </div>
     </div>
   );

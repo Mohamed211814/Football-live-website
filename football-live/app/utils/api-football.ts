@@ -6,16 +6,20 @@ const API_URL = process.env.API_FOOTBALL_URL || 'https://v3.football.api-sports.
 
 // Priority order of competitions
 const PRIORITY_LEAGUE_IDS = [
-  135, // 1. الدوري الإيطالي الدرجة الأولى
-  233, // 2. الدوري المصري الممتاز
-  200, // 3. الدوري المغربي البطولة الإحترافية
-  357, // 4. الدوري الجزائري الدرجة الأولى
-  34,  // 5. كأس آسيا للناشئين تحت 17 سنة
-  552, // 6. كأس تركيا
-  308, // 7. كأس رئيس الدولة الإماراتي
-  66,  // 8. كأس فرنسا
-  11,  // 9. كوبا سود أمريكانا
-  13,  // 10. كوبا ليبرتادوريس
+  39,  // 1. الدوري الإنجليزي الممتاز
+  140, // 2. الدوري الإسباني الدرجة الأولى
+  135, // 3. الدوري الإيطالي الدرجة الأولى
+  78,  // 4. الدوري الألماني الدرجة الأولى
+  61,  // 5. الدوري الفرنسي الدرجة الأولى
+  233, // 6. الدوري المصري الممتاز
+  200, // 7. الدوري المغربي البطولة الإحترافية
+  357, // 8. الدوري الجزائري الدرجة الأولى
+  34,  // 9. كأس آسيا للناشئين تحت 17 سنة
+  552, // 10. كأس تركيا
+  308, // 11. كأس رئيس الدولة الإماراتي
+  66,  // 12. كأس فرنسا
+  11,  // 13. كوبا سود أمريكانا
+  13,  // 14. كوبا ليبرتادوريس
 ];
 
 
@@ -91,6 +95,7 @@ export async function fetchFixtures(date: Date = new Date()): Promise<League[]> 
         time: matchStatus === 'live' ? String(fixture.fixture.status.elapsed) + "'" : matchTime,
         status: matchStatus,
         league: getArabicCompetitionName(fixture.league.id, fixture.league.name),
+        leagueEn: fixture.league.name,
         channel: 'TBD',
       };
 
@@ -98,6 +103,7 @@ export async function fetchFixtures(date: Date = new Date()): Promise<League[]> 
         leaguesMap.set(fixture.league.id, {
           id: fixture.league.id,
           name: getArabicCompetitionName(fixture.league.id, fixture.league.name),
+          nameEn: fixture.league.name,
           logo: fixture.league.logo,
           matches: [],
         });
@@ -202,6 +208,7 @@ export async function fetchFixtureDetails(id: string | number): Promise<MatchDet
       time: matchStatus === 'live' ? String(fixtureData.fixture.status.elapsed) + "'" : matchTime,
       status: matchStatus,
       league: getArabicCompetitionName(fixtureData.league.id, fixtureData.league.name),
+      leagueEn: fixtureData.league.name,
       channel: 'TBD',
     };
 

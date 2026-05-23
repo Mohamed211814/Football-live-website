@@ -1,23 +1,29 @@
+'use client';
+
 import { APILineup } from "../../../types";
+import { useLanguage } from "../../../context/LanguageContext";
+import { getArabicTeamName } from "../../../utils/team-mapper";
 
 export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
+  const { t, locale, isRTL } = useLanguage();
+
   if (!lineups || lineups.length < 2) {
-    return <div className="text-center text-gray-500 py-10 font-bold">التشكيلة غير متاحة لهذه المباراة حالياً.</div>;
+    return <div className="text-center text-gray-500 py-10 font-bold">{t.match.noLineups}</div>;
   }
 
   const home = lineups[0];
   const away = lineups[1];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 py-2 px-2">
+    <div className={`flex flex-col lg:flex-row gap-6 py-2 px-2 ${isRTL ? '' : 'lg:flex-row-reverse'}`} dir={isRTL ? "rtl" : "ltr"}>
       {/* Home Lineup */}
       <div className="flex-1 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
         <div className="flex items-center gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
           <div className="w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
-            <img src={home.team.logo} className="w-full h-full object-contain" alt={home.team.name} />
+            <img src={home.team.logo} className="w-full h-full object-contain" alt={locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name} />
           </div>
           <div>
-            <h3 className="font-black text-lg text-gray-800">{home.team.name}</h3>
+            <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name}</h3>
             <div className="inline-block mt-1 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full" dir="ltr">
               {home.formation}
             </div>
@@ -25,7 +31,7 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         </div>
         
         <h4 className="flex items-center gap-2 text-sm font-extrabold text-gray-400 mb-4 px-2 uppercase tracking-wider">
-          <div className="w-2 h-2 rounded-full bg-blue-500"></div> التشكيلة الأساسية
+          <div className="w-2 h-2 rounded-full bg-blue-500"></div> {t.match.startingXI}
         </h4>
         <div className="flex flex-col gap-2 mb-8">
           {home.startXI.map((item, idx) => (
@@ -37,7 +43,7 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         </div>
 
         <h4 className="flex items-center gap-2 text-sm font-extrabold text-gray-400 mb-4 px-2 uppercase tracking-wider">
-          <div className="w-2 h-2 rounded-full bg-gray-300"></div> الاحتياط
+          <div className="w-2 h-2 rounded-full bg-gray-300"></div> {t.match.substitutes}
         </h4>
         <div className="flex flex-col gap-2">
           {home.substitutes.map((item, idx) => (
@@ -50,7 +56,7 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         
         {home.coach && (
           <div className="mt-8 pt-5 border-t border-gray-100 flex items-center gap-4 bg-gray-50 rounded-xl p-4">
-            <h4 className="text-sm font-black text-gray-400 uppercase">المدرب</h4>
+            <h4 className="text-sm font-black text-gray-400 uppercase">{t.match.coach}</h4>
             <span className="font-bold text-gray-800">{home.coach.name}</span>
           </div>
         )}
@@ -60,10 +66,10 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
       <div className="flex-1 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
         <div className="flex items-center gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
           <div className="w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
-            <img src={away.team.logo} className="w-full h-full object-contain" alt={away.team.name} />
+            <img src={away.team.logo} className="w-full h-full object-contain" alt={locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name} />
           </div>
           <div>
-            <h3 className="font-black text-lg text-gray-800">{away.team.name}</h3>
+            <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name}</h3>
             <div className="inline-block mt-1 px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full" dir="ltr">
               {away.formation}
             </div>
@@ -71,7 +77,7 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         </div>
         
         <h4 className="flex items-center gap-2 text-sm font-extrabold text-gray-400 mb-4 px-2 uppercase tracking-wider">
-          <div className="w-2 h-2 rounded-full bg-red-500"></div> التشكيلة الأساسية
+          <div className="w-2 h-2 rounded-full bg-red-500"></div> {t.match.startingXI}
         </h4>
         <div className="flex flex-col gap-2 mb-8">
           {away.startXI.map((item, idx) => (
@@ -83,7 +89,7 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         </div>
 
         <h4 className="flex items-center gap-2 text-sm font-extrabold text-gray-400 mb-4 px-2 uppercase tracking-wider">
-          <div className="w-2 h-2 rounded-full bg-gray-300"></div> الاحتياط
+          <div className="w-2 h-2 rounded-full bg-gray-300"></div> {t.match.substitutes}
         </h4>
         <div className="flex flex-col gap-2">
           {away.substitutes.map((item, idx) => (
@@ -96,7 +102,7 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         
         {away.coach && (
           <div className="mt-8 pt-5 border-t border-gray-100 flex items-center gap-4 bg-gray-50 rounded-xl p-4">
-            <h4 className="text-sm font-black text-gray-400 uppercase">المدرب</h4>
+            <h4 className="text-sm font-black text-gray-400 uppercase">{t.match.coach}</h4>
             <span className="font-bold text-gray-800">{away.coach.name}</span>
           </div>
         )}

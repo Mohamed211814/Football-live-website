@@ -1,53 +1,48 @@
+'use client';
+
 import Link from "next/link";
+import { useLanguage } from "../context/LanguageContext";
 
 type TabKey = "yesterday" | "today" | "tomorrow";
-
-interface Tab {
-  key: TabKey;
-  label: string;
-  icon: string;
-  bgColor: string;
-  bgHover: string;
-  bgActive: string;
-  ringColor: string;
-}
-
-const tabs: Tab[] = [
-  {
-    key: "yesterday",
-    label: "مباريات الأمس",
-    icon: "⏪",
-    bgColor: "bg-blue-600",
-    bgHover: "hover:bg-blue-700",
-    bgActive: "bg-blue-700 ring-2 ring-blue-300 shadow-lg shadow-blue-500/25",
-    ringColor: "bg-blue-400",
-  },
-  {
-    key: "today",
-    label: "مباريات اليوم",
-    icon: "🔴",
-    bgColor: "bg-red-600",
-    bgHover: "hover:bg-red-700",
-    bgActive: "bg-red-700 ring-2 ring-red-300 shadow-lg shadow-red-500/25",
-    ringColor: "bg-red-400",
-  },
-  {
-    key: "tomorrow",
-    label: "مباريات الغد",
-    icon: "⏩",
-    bgColor: "bg-yellow-500",
-    bgHover: "hover:bg-yellow-600",
-    bgActive:
-      "bg-yellow-600 ring-2 ring-yellow-300 shadow-lg shadow-yellow-500/25",
-    ringColor: "bg-yellow-300",
-  },
-];
 
 interface DayTabsProps {
   activeTab: TabKey;
 }
 
 export default function DayTabs({ activeTab }: DayTabsProps) {
+  const { t } = useLanguage();
+
+  const tabs = [
+    {
+      key: "yesterday" as TabKey,
+      label: t.home.yesterday,
+      icon: "⏪",
+      bgColor: "bg-blue-600",
+      bgHover: "hover:bg-blue-700",
+      bgActive: "bg-blue-700 ring-2 ring-blue-300 shadow-lg shadow-blue-500/25",
+      ringColor: "bg-blue-400",
+    },
+    {
+      key: "today" as TabKey,
+      label: t.home.today,
+      icon: "🔴",
+      bgColor: "bg-red-600",
+      bgHover: "hover:bg-red-700",
+      bgActive: "bg-red-700 ring-2 ring-red-300 shadow-lg shadow-red-500/25",
+      ringColor: "bg-red-400",
+    },
+    {
+      key: "tomorrow" as TabKey,
+      label: t.home.tomorrow,
+      icon: "⏩",
+      bgColor: "bg-yellow-500",
+      bgHover: "hover:bg-yellow-600",
+      bgActive:
+        "bg-yellow-600 ring-2 ring-yellow-300 shadow-lg shadow-yellow-500/25",
+      ringColor: "bg-yellow-300",
+    },
+  ];
+
   return (
     <div className="w-full mb-4">
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1 py-1 -mx-1">

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useLanguage } from "../../../context/LanguageContext";
 
 interface MatchTabsProps {
   activeTab: string;
@@ -7,14 +8,16 @@ interface MatchTabsProps {
 }
 
 export default function MatchTabs({ activeTab, matchId }: MatchTabsProps) {
+  const { t, isRTL } = useLanguage();
+
   const tabs = [
-    { id: "events", label: "الأحداث" },
-    { id: "lineups", label: "التشكيلة" },
-    { id: "stats", label: "الإحصائيات" },
+    { id: "events", label: t.match.events },
+    { id: "lineups", label: t.match.lineups },
+    { id: "stats", label: t.match.statistics },
   ];
 
   return (
-    <div className="flex bg-white/60 backdrop-blur-md rounded-2xl border border-gray-200/60 p-1.5 shadow-sm relative z-20">
+    <div className="flex bg-white/60 backdrop-blur-md rounded-2xl border border-gray-200/60 p-1.5 shadow-sm relative z-20" dir={isRTL ? "rtl" : "ltr"}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (

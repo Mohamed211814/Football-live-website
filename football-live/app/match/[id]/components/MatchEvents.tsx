@@ -1,12 +1,17 @@
+'use client';
+
 import { APIEvent } from "../../../types";
+import { useLanguage } from "../../../context/LanguageContext";
 
 export default function MatchEvents({ events, homeTeamId }: { events: APIEvent[], homeTeamId?: number }) {
+  const { t, isRTL } = useLanguage();
+
   if (!events || events.length === 0) {
-    return <div className="text-center text-gray-500 py-10 font-bold">لا توجد أحداث متاحة لهذه المباراة حالياً.</div>;
+    return <div className="text-center text-gray-500 py-10 font-bold">{t.match.noEvents}</div>;
   }
 
   return (
-    <div className="relative flex flex-col gap-0 py-6 px-2 md:px-6">
+    <div className="relative flex flex-col gap-0 py-6 px-2 md:px-6" dir={isRTL ? "rtl" : "ltr"}>
       {/* Center vertical line */}
       <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-gradient-to-b from-gray-100 via-gray-300 to-gray-100 -translate-x-1/2"></div>
 
@@ -27,8 +32,10 @@ export default function MatchEvents({ events, homeTeamId }: { events: APIEvent[]
           icon = "📺"; iconBg = "bg-purple-100 text-purple-600 border-purple-200";
         }
 
+        const alignDir = isRTL ? (isHome ? 'flex-row' : 'flex-row-reverse') : (isHome ? 'flex-row-reverse' : 'flex-row');
+
         return (
-          <div key={idx} className={`relative flex items-center w-full my-4 group ${isHome ? "flex-row" : "flex-row-reverse"}`}>
+          <div key={idx} className={`relative flex items-center w-full my-4 group ${alignDir}`}>
             
             {/* Empty space for balance */}
             <div className="flex-1"></div>
@@ -39,11 +46,15 @@ export default function MatchEvents({ events, homeTeamId }: { events: APIEvent[]
             </div>
 
             {/* Event Details Card */}
-            <div className={`flex flex-col flex-1 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 relative ${isHome ? "text-right" : "text-left"}`}>
+            <div className={`flex flex-col flex-1 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 relative ${isHome ? (isRTL ? "text-right" : "text-left") : (isRTL ? "text-left" : "text-right")}`}>
               {/* Pointing triangle */}
-              <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-t border-r border-gray-100 transform rotate-45 ${isHome ? "-right-1.5 border-t-0 border-r-0 border-b border-l" : "-left-1.5"}`}></div>
+              <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-t border-r border-gray-100 transform rotate-45 ${
+                isHome 
+                  ? (isRTL ? "-right-1.5 border-t-0 border-r-0 border-b border-l" : "-left-1.5 border-t border-r border-b-0 border-l-0") 
+                  : (isRTL ? "-left-1.5 border-t border-r border-b-0 border-l-0" : "-right-1.5 border-t-0 border-r-0 border-b border-l")
+                }`}></div>
               
-              <div className={`flex items-center gap-3 mb-1 ${isHome ? "flex-row-reverse" : "flex-row"}`}>
+              <div className={`flex items-center gap-3 mb-1 ${isRTL ? (isHome ? "flex-row-reverse" : "flex-row") : (isHome ? "flex-row" : "flex-row-reverse")}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border shadow-inner ${iconBg}`}>
                   {icon}
                 </div>

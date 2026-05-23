@@ -1,0 +1,55 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred while fetching data.",
+    "retry": "Retry",
+    "backToHome": "Back to Home",
+    "vs": "VS",
+    "liveStream": "Live Stream",
+    "matches": "matches"
+  },
+  "header": {
+    "title": "Yacine TV",
+    "subtitle": "Watch Today's Live Matches",
+    "todaysMatches": "Today's Matches",
+    "news": "News"
+  },
+  "footer": {
+    "copyright": "All Rights Reserved © {year} | Yacine TV",
+    "about": "Yacine TV - Watch Today's Live Matches",
+    "streamLabel": "Live Football Streaming"
+  },
+  "home": {
+    "yesterday": "Yesterday",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "totalMatches": "Total Matches",
+    "liveNow": "Live Now",
+    "finished": "Finished",
+    "noMatches": "No Matches Available",
+    "noMatchesDesc": "There are no scheduled matches in the priority leagues today.",
+    "checkOtherDays": "Please check other dates."
+  },
+  "match": {
+    "live": "LIVE",
+    "finished": "FT",
+    "upcoming": "Upcoming",
+    "startingSoon": "Starting Soon",
+    "events": "Events",
+    "lineups": "Lineups",
+    "statistics": "Statistics",
+    "startingXI": "Starting XI",
+    "substitutes": "Substitutes",
+    "coach": "Coach",
+    "noEvents": "No events available for this match yet.",
+    "noLineups": "Lineups are not available for this match yet.",
+    "noStats": "Statistics are not available for this match.",
+    "liveCount": "Live"
+  },
+  "error": {
+    "title": "Oops, something went wrong",
+    "description": "We couldn't fetch match data. Please try again.",
+    "matchTitle": "Sorry, we couldn't load match details",
+    "matchDescription": "The match may not exist or there was a connection error."
+  }
+}

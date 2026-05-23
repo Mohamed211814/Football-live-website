@@ -1,15 +1,29 @@
-export default function DateBar({ date, title }: { date: Date, title: string }) {
+'use client';
+
+import { useLanguage } from "../context/LanguageContext";
+
+export default function DateBar({ date, dayParam }: { date: Date, dayParam: "yesterday" | "today" | "tomorrow" }) {
+  const { t, locale, isRTL } = useLanguage();
+
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  const dateStr = date.toLocaleDateString("ar-SA", options);
+  const dateStr = date.toLocaleDateString(locale === 'ar' ? "ar-SA" : "en-US", options);
+
+  let title = t.home.today;
+  if (dayParam === "yesterday") title = t.home.yesterday;
+  if (dayParam === "tomorrow") title = t.home.tomorrow;
 
   return (
-    <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200/80 px-4 py-3 mb-4 shadow-sm">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200/80 px-4 py-3 mb-4 shadow-sm" dir={isRTL ? "rtl" : "ltr"}>
+      <div className={`flex items-center gap-2 ${isRTL ? '' : 'flex-row-reverse'}`}>
+        <div>
+          <p className="text-sm font-bold text-gray-800">{title}</p>
+          <p className="text-[11px] text-gray-400">{dateStr}</p>
+        </div>
         <div className="w-8 h-8 bg-[#8B1E1E]/10 rounded-lg flex items-center justify-center">
           <svg
             className="w-4 h-4 text-[#8B1E1E]"
@@ -25,14 +39,10 @@ export default function DateBar({ date, title }: { date: Date, title: string }) 
             />
           </svg>
         </div>
-        <div>
-          <p className="text-sm font-bold text-gray-800">{title}</p>
-          <p className="text-[11px] text-gray-400">{dateStr}</p>
-        </div>
       </div>
       <div className="flex items-center gap-1.5">
         <span className="live-dot w-2 h-2 rounded-full bg-red-500 inline-block" />
-        <span className="text-xs font-semibold text-red-600">بث مباشر</span>
+        <span className="text-xs font-semibold text-red-600">{t.common.liveStream}</span>
       </div>
     </div>
   );

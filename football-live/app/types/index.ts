@@ -7,6 +7,7 @@ export interface Match {
   time: string;
   status: "live" | "upcoming" | "finished";
   league: string;
+  leagueEn?: string;
   channel: string;
   homeLogo?: string;
   awayLogo?: string;
@@ -15,6 +16,7 @@ export interface Match {
 export interface League {
   id: number;
   name: string;
+  nameEn?: string;
   logo?: string;
   matches: Match[];
 }
