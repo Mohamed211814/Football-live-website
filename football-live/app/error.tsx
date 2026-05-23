@@ -12,10 +12,8 @@ export default function Error({
 }) {
   const { t } = useLanguage();
 
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error);
-  }, [error]);
+  // Error is automatically logged by Next.js on the server.
+  // We do not log it to the client console to prevent sensitive data leaks in production.
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] px-4 text-center">

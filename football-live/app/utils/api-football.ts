@@ -1,8 +1,14 @@
+import 'server-only';
 import { APIFixtureResponse, League, Match, MatchDetailsData } from '../types';
 import { getArabicCompetitionName } from './competition-mapper';
+import { withCache } from './cache';
 
-const API_KEY = process.env.NEXT_PUBLIC_API_FOOTBALL_KEY;
+const API_KEY = process.env.API_FOOTBALL_KEY;
 const API_URL = process.env.API_FOOTBALL_URL || 'https://v3.football.api-sports.io';
+
+// Cache TTLs (seconds)
+const FIXTURES_TTL = 60;      // Refresh fixture list every 60s
+const MATCH_DETAIL_TTL = 30;  // Refresh match details every 30s
 
 // Priority order of competitions
 const PRIORITY_LEAGUE_IDS = [
@@ -43,12 +49,17 @@ function formatDateToYYYYMMDD(date: Date): string {
 }
 
 export async function fetchFixtures(date: Date = new Date()): Promise<League[]> {
+  const dateString = formatDateToYYYYMMDD(date);
+  return withCache(`fixtures:${dateString}`, FIXTURES_TTL, () => _fetchFixtures(date, dateString));
+}
+
+async function _fetchFixtures(date: Date, dateString: string): Promise<League[]> {
   if (!API_KEY) {
     console.error('API_FOOTBALL_KEY is not set');
     throw new Error('API Key missing');
   }
 
-  const dateString = formatDateToYYYYMMDD(date);
+  // dateString is already passed in from the cache wrapper
   
   try {
     const response = await fetch(`${API_URL}/fixtures?date=${dateString}`, {
@@ -161,6 +172,10 @@ export async function fetchFixtures(date: Date = new Date()): Promise<League[]> 
 }
 
 export async function fetchFixtureDetails(id: string | number): Promise<MatchDetailsData> {
+  return withCache(`fixture:${id}`, MATCH_DETAIL_TTL, () => _fetchFixtureDetails(id));
+}
+
+async function _fetchFixtureDetails(id: string | number): Promise<MatchDetailsData> {
   if (!API_KEY) {
     console.error('API_FOOTBALL_KEY is not set');
     throw new Error('API Key missing');
