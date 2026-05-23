@@ -3,8 +3,22 @@ import DayTabs from "./components/DayTabs";
 import MatchList from "./components/MatchList";
 import { fetchFixtures } from "./utils/api-football";
 
-export default async function Home() {
-  const matchesData = await fetchFixtures(new Date());
+export default async function Home(props: { searchParams: Promise<{ day?: string }> }) {
+  const searchParams = await props.searchParams;
+  const dayParam = (searchParams?.day as "yesterday" | "today" | "tomorrow") || "today";
+
+  const targetDate = new Date();
+  let title = "مباريات اليوم";
+
+  if (dayParam === "yesterday") {
+    targetDate.setDate(targetDate.getDate() - 1);
+    title = "مباريات الأمس";
+  } else if (dayParam === "tomorrow") {
+    targetDate.setDate(targetDate.getDate() + 1);
+    title = "مباريات الغد";
+  }
+
+  const matchesData = await fetchFixtures(targetDate);
 
   const totalMatches = matchesData.reduce(
     (acc, league) => acc + league.matches.length,
@@ -46,9 +60,9 @@ export default async function Home() {
           </div>
         </div>
 
-        <DayTabs />
+        <DayTabs activeTab={dayParam} />
 
-        <DateBar />
+        <DateBar date={targetDate} title={title} />
 
         {/* League sections */}
         <MatchList leagues={matchesData} />

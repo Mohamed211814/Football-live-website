@@ -65,4 +65,82 @@ export interface APIFixtureResponse {
     extratime: { home: number | null; away: number | null };
     penalty: { home: number | null; away: number | null };
   };
+  events?: APIEvent[];
+  lineups?: APILineup[];
+  statistics?: APIStatistics[];
+}
+
+export interface APIEvent {
+  time: {
+    elapsed: number;
+    extra: number | null;
+  };
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+  };
+  player: {
+    id: number | null;
+    name: string | null;
+  };
+  assist: {
+    id: number | null;
+    name: string | null;
+  };
+  type: string;
+  detail: string;
+  comments: string | null;
+}
+
+export interface APILineup {
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+    colors?: any;
+  };
+  coach: {
+    id: number;
+    name: string;
+    photo: string;
+  };
+  formation: string;
+  startXI: {
+    player: {
+      id: number;
+      name: string;
+      number: number;
+      pos: string;
+      grid: string | null;
+    };
+  }[];
+  substitutes: {
+    player: {
+      id: number;
+      name: string;
+      number: number;
+      pos: string;
+      grid: string | null;
+    };
+  }[];
+}
+
+export interface APIStatistics {
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+  };
+  statistics: {
+    type: string;
+    value: string | number | null;
+  }[];
+}
+
+export interface MatchDetailsData {
+  match: Match;
+  events: APIEvent[];
+  lineups: APILineup[];
+  statistics: APIStatistics[];
 }

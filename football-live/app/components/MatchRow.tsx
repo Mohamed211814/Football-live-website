@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Match } from '../types';
 
 interface MatchRowProps {
@@ -73,8 +74,9 @@ export default function MatchRow({ match }: MatchRowProps) {
   }
 
   return (
-    <div 
-      className={`group flex items-center justify-between px-2 sm:px-3 md:px-5 py-2.5 sm:py-3 md:py-3.5 border-b border-gray-100 last:border-b-0 transition-colors duration-200 ${
+    <Link 
+      href={`/match/${match.id}`}
+      className={`group flex items-center justify-between px-2 sm:px-3 md:px-5 py-2.5 sm:py-3 md:py-3.5 border-b border-gray-100 last:border-b-0 transition-colors duration-200 cursor-pointer hover-scale ${
         isLive ? 'bg-red-50/40' : 'bg-[#fafafa] hover:bg-gray-50'
       }`}
       dir="rtl"
@@ -120,6 +122,6 @@ export default function MatchRow({ match }: MatchRowProps) {
         </span>
         <TeamLogo name={match.awayTeam} logoUrl={match.awayLogo} />
       </div>
-    </div>
+    </Link>
   );
 }

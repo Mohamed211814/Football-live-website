@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 
 type TabKey = "yesterday" | "today" | "tomorrow";
 
@@ -46,29 +44,20 @@ const tabs: Tab[] = [
 ];
 
 interface DayTabsProps {
-  activeTab?: TabKey;
-  onTabChange?: (tab: TabKey) => void;
+  activeTab: TabKey;
 }
 
-export default function DayTabs({ activeTab: controlledTab, onTabChange }: DayTabsProps) {
-  const [internalTab, setInternalTab] = useState<TabKey>("today");
-  const activeTab = controlledTab ?? internalTab;
-
-  const handleTabClick = (key: TabKey) => {
-    setInternalTab(key);
-    onTabChange?.(key);
-  };
-
+export default function DayTabs({ activeTab }: DayTabsProps) {
   return (
     <div className="w-full mb-4">
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1 py-1 -mx-1">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
           return (
-            <button
+            <Link
               key={tab.key}
               id={`tab-${tab.key}`}
-              onClick={() => handleTabClick(tab.key)}
+              href={`/?day=${tab.key}`}
               className={`
                 relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white
                 whitespace-nowrap shrink-0 cursor-pointer
@@ -86,7 +75,7 @@ export default function DayTabs({ activeTab: controlledTab, onTabChange }: DayTa
 
               <span className="text-base leading-none">{tab.icon}</span>
               <span>{tab.label}</span>
-            </button>
+            </Link>
           );
         })}
       </div>

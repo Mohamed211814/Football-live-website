@@ -1,4 +1,4 @@
-import { APIFixtureResponse, League, Match } from '../types';
+import { APIFixtureResponse, League, Match, MatchDetailsData } from '../types';
 import { getArabicCompetitionName } from './competition-mapper';
 
 const API_KEY = process.env.NEXT_PUBLIC_API_FOOTBALL_KEY;
@@ -67,7 +67,10 @@ export async function fetchFixtures(date: Date = new Date()): Promise<League[]> 
       throw new Error('Failed to fetch data from API-Football');
     }
 
-    const fixtures: APIFixtureResponse[] = data.response || [];
+    let fixtures: APIFixtureResponse[] = data.response || [];
+    
+    // FILTER: Only keep matches from our priority leagues
+    fixtures = fixtures.filter(fixture => PRIORITY_LEAGUE_IDS.includes(fixture.league.id));
 
     // Transform and group by league
     const leaguesMap = new Map<number, League>();
@@ -147,6 +150,69 @@ export async function fetchFixtures(date: Date = new Date()): Promise<League[]> 
     return leaguesArray.filter((league) => league.matches.length > 0);
   } catch (error) {
     console.error('Error fetching fixtures:', error);
+    throw error;
+  }
+}
+
+export async function fetchFixtureDetails(id: string | number): Promise<MatchDetailsData> {
+  if (!API_KEY) {
+    console.error('API_FOOTBALL_KEY is not set');
+    throw new Error('API Key missing');
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/fixtures?id=${id}`, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-host': 'v3.football.api-sports.io',
+        'x-rapidapi-key': API_KEY,
+      },
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API responded with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.errors && Object.keys(data.errors).length > 0) {
+      console.error('API-Football Error:', data.errors);
+      throw new Error('Failed to fetch fixture details');
+    }
+
+    if (!data.response || data.response.length === 0) {
+      throw new Error('Fixture not found');
+    }
+
+    const fixtureData: APIFixtureResponse = data.response[0];
+
+    const matchStatus = mapMatchStatus(fixtureData.fixture.status.short);
+    const matchTimeDate = new Date(fixtureData.fixture.date);
+    const matchTime = `${String(matchTimeDate.getHours()).padStart(2, '0')}:${String(matchTimeDate.getMinutes()).padStart(2, '0')}`;
+
+    const match: Match = {
+      id: fixtureData.fixture.id,
+      homeTeam: fixtureData.teams.home.name,
+      awayTeam: fixtureData.teams.away.name,
+      homeLogo: fixtureData.teams.home.logo,
+      awayLogo: fixtureData.teams.away.logo,
+      homeScore: fixtureData.goals.home !== null ? fixtureData.goals.home : undefined,
+      awayScore: fixtureData.goals.away !== null ? fixtureData.goals.away : undefined,
+      time: matchStatus === 'live' ? String(fixtureData.fixture.status.elapsed) + "'" : matchTime,
+      status: matchStatus,
+      league: getArabicCompetitionName(fixtureData.league.id, fixtureData.league.name),
+      channel: 'TBD',
+    };
+
+    return {
+      match,
+      events: fixtureData.events || [],
+      lineups: fixtureData.lineups || [],
+      statistics: fixtureData.statistics || [],
+    };
+  } catch (error) {
+    console.error('Error fetching fixture details:', error);
     throw error;
   }
 }

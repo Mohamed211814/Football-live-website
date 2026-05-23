@@ -1,12 +1,11 @@
-export default function DateBar() {
-  const today = new Date();
+export default function DateBar({ date, title }: { date: Date, title: string }) {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  const dateStr = today.toLocaleDateString("ar-SA", options);
+  const dateStr = date.toLocaleDateString("ar-SA", options);
 
   return (
     <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200/80 px-4 py-3 mb-4 shadow-sm">
@@ -27,7 +26,7 @@ export default function DateBar() {
           </svg>
         </div>
         <div>
-          <p className="text-sm font-bold text-gray-800">مباريات اليوم</p>
+          <p className="text-sm font-bold text-gray-800">{title}</p>
           <p className="text-[11px] text-gray-400">{dateStr}</p>
         </div>
       </div>
