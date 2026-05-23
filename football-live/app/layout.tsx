@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={`${notoArabic.variable} ${inter.variable}`}>
+    <html lang="ar-u-nu-latn" dir="rtl" className={`${notoArabic.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-[#f0f0f0] font-arabic antialiased flex flex-col">
         <LanguageProvider>
           <Header />

@@ -11,7 +11,7 @@ export default function DateBar({ date, dayParam }: { date: Date, dayParam: "yes
     month: "long",
     day: "numeric",
   };
-  const dateStr = date.toLocaleDateString(locale === 'ar' ? "ar-SA" : "en-US", options);
+  const dateStr = date.toLocaleDateString(locale === 'ar' ? "ar-SA-u-nu-latn" : "en-US", options);
 
   let title = t.home.today;
   if (dayParam === "yesterday") title = t.home.yesterday;

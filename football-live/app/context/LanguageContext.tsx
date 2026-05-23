@@ -34,7 +34,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.lang = locale;
+    root.lang = locale === 'ar' ? 'ar-u-nu-latn' : 'en';
     root.dir = locale === 'ar' ? 'rtl' : 'ltr';
     document.body.dir = locale === 'ar' ? 'rtl' : 'ltr';
   }, [locale]);
