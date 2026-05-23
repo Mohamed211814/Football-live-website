@@ -4,9 +4,10 @@ import MatchList from "./components/MatchList";
 import HomeStats from "./components/HomeStats";
 import { fetchFixtures } from "./utils/api-football";
 
-export default async function Home(props: { searchParams: Promise<{ day?: string }> }) {
+export default async function Home(props: { searchParams: Promise<{ day?: string, sort?: string }> }) {
   const searchParams = await props.searchParams;
   const dayParam = (searchParams?.day as "yesterday" | "today" | "tomorrow") || "today";
+  const sortParam = searchParams?.sort;
 
   const targetDate = new Date();
 
@@ -16,7 +17,26 @@ export default async function Home(props: { searchParams: Promise<{ day?: string
     targetDate.setDate(targetDate.getDate() + 1);
   }
 
-  const matchesData = await fetchFixtures(targetDate);
+  let matchesData = await fetchFixtures(targetDate);
+
+  if (sortParam === "live") {
+    // Sort leagues: leagues with live matches first
+    matchesData.sort((a, b) => {
+      const aLive = a.matches.some((m) => m.status === "live") ? 1 : 0;
+      const bLive = b.matches.some((m) => m.status === "live") ? 1 : 0;
+      return bLive - aLive;
+    });
+
+    // Sort matches within leagues: live matches first
+    matchesData = matchesData.map((league) => {
+      const sortedMatches = [...league.matches].sort((a, b) => {
+        const aLive = a.status === "live" ? 1 : 0;
+        const bLive = b.status === "live" ? 1 : 0;
+        return bLive - aLive;
+      });
+      return { ...league, matches: sortedMatches };
+    });
+  }
 
   const totalMatches = matchesData.reduce(
     (acc, league) => acc + league.matches.length,

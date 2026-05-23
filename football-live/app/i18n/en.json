@@ -32,7 +32,7 @@
   },
   "match": {
     "live": "LIVE",
-    "finished": "FT",
+    "finished": "Finished",
     "upcoming": "Upcoming",
     "startingSoon": "Starting Soon",
     "events": "Events",

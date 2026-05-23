@@ -1,9 +1,23 @@
 'use client';
 
 import { useLanguage } from "../context/LanguageContext";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function DateBar({ date, dayParam }: { date: Date, dayParam: "yesterday" | "today" | "tomorrow" }) {
   const { t, locale, isRTL } = useLanguage();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isLiveSort = searchParams.get('sort') === 'live';
+
+  const toggleLiveSort = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (isLiveSort) {
+      params.delete('sort');
+    } else {
+      params.set('sort', 'live');
+    }
+    router.push(`/?${params.toString()}`);
+  };
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -40,9 +54,13 @@ export default function DateBar({ date, dayParam }: { date: Date, dayParam: "yes
           </svg>
         </div>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div 
+        className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg transition-all active:scale-95 ${isLiveSort ? 'bg-red-50' : 'hover:bg-gray-50'}`}
+        onClick={toggleLiveSort}
+        style={{ cursor: 'pointer' }}
+      >
         <span className="live-dot w-2 h-2 rounded-full bg-red-500 inline-block" />
-        <span className="text-xs font-semibold text-red-600">{t.common.liveStream}</span>
+        <span className="text-xs font-semibold text-red-600 select-none">{t.common.liveStream}</span>
       </div>
     </div>
   );
