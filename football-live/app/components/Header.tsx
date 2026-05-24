@@ -1,19 +1,25 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Header() {
-  const [activeTab, setActiveTab] = useState<"matches" | "news">("matches");
+  const pathname = usePathname();
   const { t, locale, toggleLanguage } = useLanguage();
+
+  const isNews = pathname === "/news";
+  const isMatches = !isNews;
+
+  const activeClass = "bg-white text-[#8B1E1E] shadow-lg shadow-black/10";
+  const inactiveClass = "text-white/75 hover:text-white hover:bg-white/10";
 
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Main header */}
       <div className="bg-[#8B1E1E]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          {/* Top row: logo/title right + nav center */}
+          {/* Top row: logo/title + nav center */}
           <div className="flex items-center justify-between py-3 md:py-4">
             {/* Logo & Title */}
             <Link href="/" className="flex items-center gap-3 shrink-0 cursor-pointer hover:opacity-90 transition-opacity">
@@ -49,39 +55,34 @@ export default function Header() {
 
             {/* Center Navigation */}
             <nav className="hidden sm:flex items-center gap-1 bg-white/[0.07] rounded-full p-1 border border-white/[0.06]">
-              <button
+              <Link
                 id="nav-matches"
-                onClick={() => setActiveTab("matches")}
-                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ease-out cursor-pointer ${
-                  activeTab === "matches"
-                    ? "bg-white text-[#8B1E1E] shadow-lg shadow-black/10"
-                    : "text-white/75 hover:text-white hover:bg-white/10"
+                href="/"
+                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ease-out ${
+                  isMatches ? activeClass : inactiveClass
                 }`}
               >
                 <span className="flex items-center gap-1.5">
                   <span>⚽</span>
                   <span>{t.header.todaysMatches}</span>
                 </span>
-              </button>
-              <button
+              </Link>
+              <Link
                 id="nav-news"
-                onClick={() => setActiveTab("news")}
-                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ease-out cursor-pointer ${
-                  activeTab === "news"
-                    ? "bg-white text-[#8B1E1E] shadow-lg shadow-black/10"
-                    : "text-white/75 hover:text-white hover:bg-white/10"
+                href="/news"
+                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ease-out ${
+                  isNews ? activeClass : inactiveClass
                 }`}
               >
                 <span className="flex items-center gap-1.5">
                   <span>📰</span>
                   <span>{t.header.news}</span>
                 </span>
-              </button>
+              </Link>
             </nav>
 
-            {/* Language Switcher + Mobile nav */}
+            {/* Language Switcher */}
             <div className="flex items-center gap-2">
-              {/* Language Toggle Button */}
               <button
                 id="lang-switcher"
                 onClick={toggleLanguage}
@@ -98,28 +99,24 @@ export default function Header() {
 
           {/* Mobile: compact nav */}
           <nav className="flex sm:hidden items-center gap-1 bg-white/[0.07] rounded-full p-0.5 border border-white/[0.06] mb-3">
-            <button
+            <Link
               id="nav-matches-mobile"
-              onClick={() => setActiveTab("matches")}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${
-                activeTab === "matches"
-                  ? "bg-white text-[#8B1E1E] shadow-md"
-                  : "text-white/75 hover:text-white"
+              href="/"
+              className={`flex-1 text-center px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                isMatches ? "bg-white text-[#8B1E1E] shadow-md" : "text-white/75 hover:text-white"
               }`}
             >
               {t.header.todaysMatches}
-            </button>
-            <button
+            </Link>
+            <Link
               id="nav-news-mobile"
-              onClick={() => setActiveTab("news")}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${
-                activeTab === "news"
-                  ? "bg-white text-[#8B1E1E] shadow-md"
-                  : "text-white/75 hover:text-white"
+              href="/news"
+              className={`flex-1 text-center px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                isNews ? "bg-white text-[#8B1E1E] shadow-md" : "text-white/75 hover:text-white"
               }`}
             >
               {t.header.news}
-            </button>
+            </Link>
           </nav>
         </div>
       </div>
