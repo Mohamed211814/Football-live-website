@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Header() {
@@ -15,7 +16,7 @@ export default function Header() {
           {/* Top row: logo/title right + nav center */}
           <div className="flex items-center justify-between py-3 md:py-4">
             {/* Logo & Title */}
-            <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="flex items-center gap-3 shrink-0 cursor-pointer hover:opacity-90 transition-opacity">
               {/* Icon */}
               <div className="w-11 h-11 md:w-12 md:h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-lg shadow-black/10">
                 <svg
@@ -44,7 +45,7 @@ export default function Header() {
                   {t.header.subtitle}
                 </p>
               </div>
-            </div>
+            </Link>
 
             {/* Center Navigation */}
             <nav className="hidden sm:flex items-center gap-1 bg-white/[0.07] rounded-full p-1 border border-white/[0.06]">
