@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Match } from '../types';
 import { useLanguage } from "../context/LanguageContext";
 import { getArabicTeamName } from '../utils/team-mapper';
@@ -27,13 +28,14 @@ function TeamLogo({ name, logoUrl }: { name: string; logoUrl?: string }) {
 
   if (logoUrl && !imgError) {
     return (
-      <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center flex-shrink-0">
-        <img 
+      <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center flex-shrink-0">
+        <Image 
           src={logoUrl} 
           alt={name} 
+          fill
           onError={() => setImgError(true)}
-          className="w-full h-full object-contain drop-shadow-sm"
-          loading="lazy"
+          className="object-contain drop-shadow-sm"
+          sizes="(max-width: 640px) 28px, (max-width: 768px) 32px, 36px"
         />
       </div>
     );

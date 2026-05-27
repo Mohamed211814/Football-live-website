@@ -1,25 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useLanguage } from "../context/LanguageContext";
+import LeagueNav from "./LeagueNav";
 
 export default function Header() {
-  const pathname = usePathname();
   const { t, locale, toggleLanguage } = useLanguage();
-
-  const isNews = pathname === "/news";
-  const isMatches = !isNews;
-
-  const activeClass = "bg-white text-[#8B1E1E] shadow-lg shadow-black/10";
-  const inactiveClass = "text-white/75 hover:text-white hover:bg-white/10";
 
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Main header */}
       <div className="bg-[#8B1E1E]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          {/* Top row: logo/title + nav center */}
+          {/* Top row: logo/title right + nav center */}
           <div className="flex items-center justify-between py-3 md:py-4">
             {/* Logo & Title */}
             <Link href="/" className="flex items-center gap-3 shrink-0 cursor-pointer hover:opacity-90 transition-opacity">
@@ -53,34 +46,6 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Center Navigation */}
-            <nav className="hidden sm:flex items-center gap-1 bg-white/[0.07] rounded-full p-1 border border-white/[0.06]">
-              <Link
-                id="nav-matches"
-                href="/"
-                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ease-out ${
-                  isMatches ? activeClass : inactiveClass
-                }`}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span>⚽</span>
-                  <span>{t.header.todaysMatches}</span>
-                </span>
-              </Link>
-              <Link
-                id="nav-news"
-                href="/news"
-                className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ease-out ${
-                  isNews ? activeClass : inactiveClass
-                }`}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span>📰</span>
-                  <span>{t.header.news}</span>
-                </span>
-              </Link>
-            </nav>
-
             {/* Language Switcher */}
             <div className="flex items-center gap-2">
               <button
@@ -96,29 +61,12 @@ export default function Header() {
               </button>
             </div>
           </div>
-
-          {/* Mobile: compact nav */}
-          <nav className="flex sm:hidden items-center gap-1 bg-white/[0.07] rounded-full p-0.5 border border-white/[0.06] mb-3">
-            <Link
-              id="nav-matches-mobile"
-              href="/"
-              className={`flex-1 text-center px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
-                isMatches ? "bg-white text-[#8B1E1E] shadow-md" : "text-white/75 hover:text-white"
-              }`}
-            >
-              {t.header.todaysMatches}
-            </Link>
-            <Link
-              id="nav-news-mobile"
-              href="/news"
-              className={`flex-1 text-center px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
-                isNews ? "bg-white text-[#8B1E1E] shadow-md" : "text-white/75 hover:text-white"
-              }`}
-            >
-              {t.header.news}
-            </Link>
-          </nav>
         </div>
+      </div>
+      
+      {/* Leagues Sub-Navbar */}
+      <div className="w-full">
+        <LeagueNav />
       </div>
 
       {/* Bottom accent line */}

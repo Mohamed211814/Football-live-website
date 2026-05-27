@@ -170,6 +170,42 @@ export const ARABIC_TEAM_MAP: Record<string, string> = {
 
   // Egyptian (additional)
   'Kahraba Ismailia': 'كهرباء الإسماعيلية',
+  'Ceramica Cleopatra': 'سيراميكا كليوباترا',
+  'Modern Future': 'مودرن فيوتشر',
+  'ZED': 'زد',
+  'ZED FC': 'زد',
+  'Baladiyat El Mahalla': 'بلدية المحلة',
+  'Tala\'ea El Gaish': 'طلائع الجيش',
+  'El Dakhleya': 'الداخلية',
+
+  // Bundesliga / Germany Additional
+  'Paderborn': 'بادربورن',
+  'Holstein Kiel': 'هولشتاين كيل',
+  'St. Pauli': 'سانت باولي',
+  'Schalke 04': 'شالكه',
+  'Hertha Berlin': 'هرتا برلين',
+  'Dusseldorf': 'دوسلدورف',
+
+  // Premier League Additional
+  'Leicester City': 'ليستر سيتي',
+  'Leicester': 'ليستر سيتي',
+  'Ipswich Town': 'إيبسويتش تاون',
+  'Ipswich': 'إيبسويتش تاون',
+  'Southampton': 'ساوثهامبتون',
+
+  // La Liga Additional
+  'Real Valladolid': 'بلد الوليد',
+  'Valladolid': 'بلد الوليد',
+  'Leganes': 'ليغانيس',
+
+  // Serie A Additional
+  'Inter Milan': 'إنتر ميلان',
+  'Venezia': 'فينيزيا',
+
+  // Ligue 1 Additional
+  'Saint-Etienne': 'سانت إيتيان',
+  'Auxerre': 'أوكسير',
+  'Angers': 'أنجيه',
 
   // Others
   'Al Diriyah': 'الدرعية',
@@ -184,7 +220,63 @@ export const ARABIC_TEAM_MAP: Record<string, string> = {
   'Blooming': 'بلومينغ',
   'Carabobo FC': 'كارابوبو',
   'Caracas FC': 'كاراكاس',
+  'Always Ready': 'أولويز ريدي',
+  'Montevideo City Torque': 'أتلتيكو توركي',
+  'Atletico Torque': 'أتلتيكو توركي',
+  'Boston River': 'بوسطن ريفر',
+  'Deportivo Riestra': 'ديبورتيفو ريسترا',
+  'Gremio': 'غريميو',
+  'LDU de Quito': 'إل دي يو كيتو',
+  'Lanus': 'لانوس',
+  'Millonarios': 'ميلوناريوس',
+  'Mirassol': 'ميراسول',
+  'O\'Higgins': 'أوهيغينز',
+  'Palestino': 'بالستينو',
+  'Saint Etienne': 'سانت إيتيان',
+  'Sao Paulo': 'ساو باولو',
 };
+
+function cleanTeamName(name: string): string {
+  let clean = name.toLowerCase();
+  
+  // Remove common prefixes/suffixes as standalone words
+  const noiseWords = [
+    'fc', 'sc', 'vfl', 'vfb', 'fsv', 'tsg', 'fk', 'rc', 'rsc', 'ac', 'as', 
+    'ud', 'sd', 'cd', 'cf', 'afc', 'sv', 'bsc', 'spvgg', 'sg', 'us', 'ss',
+    '1', '07', '05', '98', '96', '1899', '1907', '04', '1904', '1860', '09'
+  ];
+  
+  for (const word of noiseWords) {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    clean = clean.replace(regex, '');
+  }
+  
+  // Remove any remaining standalone numbers
+  clean = clean.replace(/\b\d+\b/g, '');
+  
+  // Clean up punctuation like dots and multiple spaces
+  return clean.replace(/\./g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Lazy-loaded cache for normalized mapping
+let normalizedMap: Record<string, string> | null = null;
+
+function getNormalizedMap(): Record<string, string> {
+  if (normalizedMap) return normalizedMap;
+  
+  normalizedMap = {};
+  for (const [key, value] of Object.entries(ARABIC_TEAM_MAP)) {
+    // 1. Map lowercase exact key
+    normalizedMap[key.toLowerCase()] = value;
+    
+    // 2. Map cleaned key
+    const cleanedKey = cleanTeamName(key);
+    if (cleanedKey && !(cleanedKey in normalizedMap)) {
+      normalizedMap[cleanedKey] = value;
+    }
+  }
+  return normalizedMap;
+}
 
 /**
  * Reusable utility to safely map API-Football team English names to Arabic names.
@@ -194,8 +286,36 @@ export const ARABIC_TEAM_MAP: Record<string, string> = {
  * @returns The Arabic name or the fallback name
  */
 export function getArabicTeamName(englishName: string): string {
+  if (!englishName) return '';
+  
+  // 1. Try exact match (fast path)
   if (englishName in ARABIC_TEAM_MAP) {
     return ARABIC_TEAM_MAP[englishName];
   }
+  
+  // 2. Try lowercase exact match or cleaned match
+  const nMap = getNormalizedMap();
+  const lowerName = englishName.toLowerCase();
+  
+  if (lowerName in nMap) {
+    return nMap[lowerName];
+  }
+  
+  const cleanedName = cleanTeamName(englishName);
+  if (cleanedName && cleanedName in nMap) {
+    return nMap[cleanedName];
+  }
+  
+  // 3. Fallback: Check if any key in the original map is a substring of the cleaned name or vice-versa
+  // Only do this for keys that are sufficiently long to avoid false positives (e.g., length > 3)
+  for (const [key, value] of Object.entries(ARABIC_TEAM_MAP)) {
+    const cleanKey = cleanTeamName(key);
+    if (cleanKey && cleanKey.length > 3) {
+      if (cleanedName.includes(cleanKey) || cleanKey.includes(cleanedName)) {
+        return value;
+      }
+    }
+  }
+  
   return englishName;
 }

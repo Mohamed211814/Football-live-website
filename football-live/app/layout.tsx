@@ -4,7 +4,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { LanguageProvider } from "./context/LanguageContext";
+import { LanguageProvider, Locale } from "./context/LanguageContext";
+import { cookies } from "next/headers";
 
 const notoArabic = Noto_Sans_Arabic({
   subsets: ["arabic"],
@@ -33,15 +34,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("football-locale")?.value as Locale) || "ar";
+
   return (
-    <html lang="ar-u-nu-latn" dir="rtl" className={`${notoArabic.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-[#f0f0f0] font-arabic antialiased flex flex-col">
-        <LanguageProvider>
+    <html lang={locale === 'ar' ? 'ar-u-nu-latn' : 'en'} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`${notoArabic.variable} ${inter.variable}`}>
+      <body className={`min-h-screen bg-[#f0f0f0] ${locale === 'ar' ? 'font-arabic' : 'font-sans'} antialiased flex flex-col`}>
+        <LanguageProvider initialLocale={locale}>
           <Header />
           <main className="flex-1">
             {children}

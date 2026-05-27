@@ -22,15 +22,22 @@ const LanguageContext = createContext<LanguageContextType>({
   isRTL: true,
 });
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('ar');
+interface LanguageProviderProps {
+  children: React.ReactNode;
+  initialLocale?: Locale;
+}
 
+export function LanguageProvider({ children, initialLocale = 'ar' }: LanguageProviderProps) {
+  const [locale, setLocale] = useState<Locale>(initialLocale);
+
+  // Sync state with localStorage/cookie if client has another preference
   useEffect(() => {
     const saved = localStorage.getItem('football-locale') as Locale | null;
-    if (saved === 'en' || saved === 'ar') {
+    if (saved && (saved === 'en' || saved === 'ar') && saved !== locale) {
       setLocale(saved);
+      document.cookie = `football-locale=${saved}; path=/; max-age=31536000; SameSite=Lax`;
     }
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -40,12 +47,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [locale]);
 
   const toggleLanguage = useCallback(() => {
-    setLocale((prev) => {
-      const next: Locale = prev === 'ar' ? 'en' : 'ar';
-      localStorage.setItem('football-locale', next);
-      return next;
-    });
-  }, []);
+    const next: Locale = locale === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('football-locale', next);
+    
+    // Set cookie for SSR layout detection
+    document.cookie = `football-locale=${next}; path=/; max-age=31536000; SameSite=Lax`;
+    
+    setLocale(next);
+    
+    // Perform full reload so the server-side components (like MatchPage) rebuild in the new language
+    window.location.reload();
+  }, [locale]);
 
   const t = locale === 'ar' ? ar : en;
   const isRTL = locale === 'ar';

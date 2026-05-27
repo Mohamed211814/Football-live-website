@@ -2,9 +2,10 @@
 
 import { APIEvent } from "../../../types";
 import { useLanguage } from "../../../context/LanguageContext";
+import { getArabicEventDetail } from "../../../utils/translation-helper";
 
 export default function MatchEvents({ events, homeTeamId }: { events: APIEvent[], homeTeamId?: number }) {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, locale } = useLanguage();
 
   if (!events || events.length === 0) {
     return <div className="text-center text-gray-500 py-10 font-bold">{t.match.noEvents}</div>;
@@ -64,7 +65,7 @@ export default function MatchEvents({ events, homeTeamId }: { events: APIEvent[]
               </div>
               
               <span className="text-xs md:text-sm text-gray-500 font-bold">
-                {event.detail} {event.assist.name ? <span className="text-[#8B1E1E]">({event.assist.name})</span> : ""}
+                {getArabicEventDetail(event.detail, locale)} {event.assist.name ? <span className="text-[#8B1E1E]">({event.assist.name})</span> : ""}
               </span>
             </div>
             

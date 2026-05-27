@@ -1,13 +1,10 @@
-import DateBar from "./components/DateBar";
-import DayTabs from "./components/DayTabs";
-import MatchList from "./components/MatchList";
-import HomeStats from "./components/HomeStats";
+import { Suspense } from "react";
 import { fetchFixtures } from "./utils/api-football";
+import HomeDashboard from "./components/HomeDashboard";
 
-export default async function Home(props: { searchParams: Promise<{ day?: string, sort?: string }> }) {
+export default async function Home(props: { searchParams: Promise<{ day?: string }> }) {
   const searchParams = await props.searchParams;
   const dayParam = (searchParams?.day as "yesterday" | "today" | "tomorrow") || "today";
-  const sortParam = searchParams?.sort;
 
   const targetDate = new Date();
 
@@ -17,58 +14,19 @@ export default async function Home(props: { searchParams: Promise<{ day?: string
     targetDate.setDate(targetDate.getDate() + 1);
   }
 
-  let matchesData = await fetchFixtures(targetDate);
-
-  if (sortParam === "live") {
-    // Sort leagues: leagues with live matches first
-    matchesData.sort((a, b) => {
-      const aLive = a.matches.some((m) => m.status === "live") ? 1 : 0;
-      const bLive = b.matches.some((m) => m.status === "live") ? 1 : 0;
-      return bLive - aLive;
-    });
-
-    // Sort matches within leagues: live matches first
-    matchesData = matchesData.map((league) => {
-      const sortedMatches = [...league.matches].sort((a, b) => {
-        const aLive = a.status === "live" ? 1 : 0;
-        const bLive = b.status === "live" ? 1 : 0;
-        return bLive - aLive;
-      });
-      return { ...league, matches: sortedMatches };
-    });
-  }
-
-  const totalMatches = matchesData.reduce(
-    (acc, league) => acc + league.matches.length,
-    0
-  );
-  const liveMatches = matchesData.reduce(
-    (acc, league) =>
-      acc + league.matches.filter((m) => m.status === "live").length,
-    0
-  );
-  const finishedMatches = matchesData.reduce(
-    (acc, league) =>
-      acc + league.matches.filter((m) => m.status === "finished").length,
-    0
-  );
+  // Fetch ALL matches for the day. Filtering will happen on the client.
+  const matchesData = await fetchFixtures(targetDate);
 
   return (
     <div className="py-5">
       <div className="max-w-4xl mx-auto px-3 md:px-4">
-        {/* Stats row */}
-        <HomeStats 
-          totalMatches={totalMatches} 
-          liveMatches={liveMatches} 
-          finishedMatches={finishedMatches} 
-        />
-
-        <DayTabs activeTab={dayParam} />
-
-        <DateBar date={targetDate} dayParam={dayParam} />
-
-        {/* League sections */}
-        <MatchList leagues={matchesData} />
+        <Suspense fallback={<div className="animate-pulse h-96 bg-gray-100 rounded-xl"></div>}>
+          <HomeDashboard 
+            initialMatchesData={matchesData} 
+            targetDate={targetDate} 
+            dayParam={dayParam} 
+          />
+        </Suspense>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { Match } from "../../../types";
 import { useLanguage } from "../../../context/LanguageContext";
 import { getArabicTeamName } from "../../../utils/team-mapper";
+import Image from "next/image";
 
 export default function MatchHeader({ match }: { match: Match }) {
   const isLive = match.status === "live";
@@ -36,13 +37,19 @@ export default function MatchHeader({ match }: { match: Match }) {
       </div>
 
       {/* Main Score Area */}
-      <div className={`relative z-10 flex justify-between items-center ${isRTL ? '' : 'flex-row-reverse'}`}>
+      <div className="relative z-10 flex justify-between items-center">
         {/* Home Team (Right side in RTL, Left side in LTR) */}
         <div className="flex flex-col items-center w-[30%]">
           <div className="relative w-20 h-20 md:w-28 md:h-28 mb-3 group">
             <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-300"></div>
             {match.homeLogo ? (
-              <img src={match.homeLogo} alt={displayHomeTeam} className="w-full h-full object-contain drop-shadow-2xl relative z-10 transform group-hover:scale-110 transition-transform duration-300" />
+              <Image 
+                src={match.homeLogo} 
+                alt={displayHomeTeam} 
+                fill
+                className="object-contain drop-shadow-2xl relative z-10 transform group-hover:scale-110 transition-transform duration-300"
+                sizes="(max-width: 768px) 80px, 112px"
+              />
             ) : (
                <div className="w-full h-full bg-white/10 border border-white/20 rounded-full relative z-10"></div>
             )}
@@ -57,7 +64,7 @@ export default function MatchHeader({ match }: { match: Match }) {
               <span className="text-3xl md:text-5xl font-black drop-shadow-lg tabular-nums tracking-wider">{match.time}</span>
             </div>
           ) : (
-            <div className={`flex items-center gap-3 md:gap-6 ${isRTL ? '' : 'flex-row-reverse'}`}>
+            <div className="flex items-center gap-3 md:gap-6">
               <span className="text-4xl md:text-6xl font-black drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">{match.homeScore}</span>
               <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white/50"></div>
               <span className="text-4xl md:text-6xl font-black drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">{match.awayScore}</span>
@@ -75,7 +82,13 @@ export default function MatchHeader({ match }: { match: Match }) {
           <div className="relative w-20 h-20 md:w-28 md:h-28 mb-3 group">
             <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-300"></div>
             {match.awayLogo ? (
-              <img src={match.awayLogo} alt={displayAwayTeam} className="w-full h-full object-contain drop-shadow-2xl relative z-10 transform group-hover:scale-110 transition-transform duration-300" />
+              <Image 
+                src={match.awayLogo} 
+                alt={displayAwayTeam} 
+                fill
+                className="object-contain drop-shadow-2xl relative z-10 transform group-hover:scale-110 transition-transform duration-300"
+                sizes="(max-width: 768px) 80px, 112px"
+              />
             ) : (
                <div className="w-full h-full bg-white/10 border border-white/20 rounded-full relative z-10"></div>
             )}

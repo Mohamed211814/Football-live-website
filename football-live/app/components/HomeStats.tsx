@@ -12,7 +12,7 @@ export default function HomeStats({ totalMatches, liveMatches, finishedMatches }
   const { t, isRTL } = useLanguage();
 
   return (
-    <div className={`grid grid-cols-3 gap-3 mb-4 ${isRTL ? '' : 'flex-row-reverse'}`} dir={isRTL ? "rtl" : "ltr"}>
+    <div className="grid grid-cols-3 gap-3 mb-4" dir={isRTL ? "rtl" : "ltr"}>
       <div className="bg-white rounded-xl border border-gray-200/80 p-3 text-center shadow-sm">
         <p className="text-2xl font-extrabold text-[#8B1E1E]">
           {totalMatches}

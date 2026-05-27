@@ -3,6 +3,7 @@
 import { APILineup } from "../../../types";
 import { useLanguage } from "../../../context/LanguageContext";
 import { getArabicTeamName } from "../../../utils/team-mapper";
+import Image from "next/image";
 
 export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
   const { t, locale, isRTL } = useLanguage();
@@ -15,12 +16,18 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
   const away = lineups[1];
 
   return (
-    <div className={`flex flex-col lg:flex-row gap-6 py-2 px-2 ${isRTL ? '' : 'lg:flex-row-reverse'}`} dir={isRTL ? "rtl" : "ltr"}>
+    <div className="flex flex-col lg:flex-row gap-6 py-2 px-2" dir={isRTL ? "rtl" : "ltr"}>
       {/* Home Lineup */}
       <div className="flex-1 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
         <div className="flex items-center gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-          <div className="w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
-            <img src={home.team.logo} className="w-full h-full object-contain" alt={locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name} />
+          <div className="relative w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
+            <Image 
+              src={home.team.logo} 
+              className="object-contain p-1" 
+              alt={locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name} 
+              fill
+              sizes="(max-width: 768px) 64px, 64px"
+            />
           </div>
           <div>
             <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name}</h3>
@@ -65,8 +72,14 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
       {/* Away Lineup */}
       <div className="flex-1 bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
         <div className="flex items-center gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-          <div className="w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
-            <img src={away.team.logo} className="w-full h-full object-contain" alt={locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name} />
+          <div className="relative w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
+            <Image 
+              src={away.team.logo} 
+              className="object-contain p-1" 
+              alt={locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name} 
+              fill
+              sizes="(max-width: 768px) 64px, 64px"
+            />
           </div>
           <div>
             <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name}</h3>

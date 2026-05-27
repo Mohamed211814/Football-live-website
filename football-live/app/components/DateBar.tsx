@@ -33,11 +33,7 @@ export default function DateBar({ date, dayParam }: { date: Date, dayParam: "yes
 
   return (
     <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200/80 px-4 py-3 mb-4 shadow-sm" dir={isRTL ? "rtl" : "ltr"}>
-      <div className={`flex items-center gap-2 ${isRTL ? '' : 'flex-row-reverse'}`}>
-        <div>
-          <p className="text-sm font-bold text-gray-800">{title}</p>
-          <p className="text-[11px] text-gray-400">{dateStr}</p>
-        </div>
+      <div className="flex items-center gap-2.5">
         <div className="w-8 h-8 bg-[#8B1E1E]/10 rounded-lg flex items-center justify-center">
           <svg
             className="w-4 h-4 text-[#8B1E1E]"
@@ -52,6 +48,10 @@ export default function DateBar({ date, dayParam }: { date: Date, dayParam: "yes
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
+        </div>
+        <div>
+          <p className="text-sm font-bold text-gray-800">{title}</p>
+          <p className="text-[11px] text-gray-400">{dateStr}</p>
         </div>
       </div>
       <div 

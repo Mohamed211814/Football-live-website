@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useLanguage } from "../context/LanguageContext";
 
 interface CompetitionHeaderProps {
@@ -22,12 +23,13 @@ export default function CompetitionHeader({ title, logoUrl, matchCount, liveCoun
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
         {/* League logo */}
         {logoUrl ? (
-          <div className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 shrink-0">
-            <img 
+          <div className="relative flex items-center justify-center w-6 h-6 md:w-7 md:h-7 shrink-0">
+            <Image 
               src={logoUrl} 
               alt={title} 
-              className="w-full h-full object-contain"
-              loading="lazy"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 24px, 28px"
             />
           </div>
         ) : (
