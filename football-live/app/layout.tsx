@@ -27,10 +27,26 @@ export const metadata: Metadata = {
     "Watch today's live football matches free. Full schedule with scores, lineups, and events. | مشاهدة مباريات اليوم بث مباشر مجاناً.",
   keywords: "football live, مباريات اليوم, بث مباشر, Kooraza, كرة القدم",
   openGraph: {
-    title: "Kooraza",
+    title: "Kooraza - مباريات اليوم بث مباشر",
     description: "Live football matches today / مباريات اليوم بث مباشر",
-    locale: "ar_AR",
+    locale: "ar_EG",
     type: "website",
+    siteName: "Kooraza",
+    url: "https://football-live-yacine.com",
+    images: [
+      {
+        url: "https://football-live-yacine.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Kooraza Live Football",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kooraza - مباريات اليوم بث مباشر",
+    description: "Watch today's live football matches free.",
+    images: ["https://football-live-yacine.com/og-image.jpg"],
   },
 };
 

@@ -1,11 +1,13 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { useLanguage } from "../context/LanguageContext";
 
 const NAV_LEAGUES = [
+  // ... (keep existing leagues)
   { id: 39, nameAr: 'الدوري الإنجليزي', nameEn: 'Premier League' },
   { id: 140, nameAr: 'الدوري الإسباني', nameEn: 'La Liga' },
   { id: 135, nameAr: 'الدوري الإيطالي', nameEn: 'Serie A' },
@@ -30,23 +32,91 @@ const NAV_LEAGUES = [
 ];
 
 export default function LeagueNav() {
-  const { locale } = useLanguage();
+  const { locale, isRTL } = useLanguage();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const currentLeagueId = searchParams.get('league');
-  const currentDay = searchParams.get('day'); // Preserve day param when clicking leagues
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const basePath = pathname || '/';
+
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const firstChild = container.firstElementChild;
+      const lastChild = container.lastElementChild;
+      
+      if (!firstChild || !lastChild) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const firstRect = firstChild.getBoundingClientRect();
+      const lastRect = lastChild.getBoundingClientRect();
+
+      // In RTL, the first DOM element is painted on the right.
+      const leftmostRect = isRTL ? lastRect : firstRect;
+      const rightmostRect = isRTL ? firstRect : lastRect;
+
+      // Allow 1px tolerance for rounding
+      const canScrollLeft = leftmostRect.left < containerRect.left - 1;
+      const canScrollRight = rightmostRect.right > containerRect.right + 1;
+
+      setShowLeftArrow(canScrollLeft);
+      setShowRightArrow(canScrollRight);
+    }
+  };
+
+  useEffect(() => {
+    // Check initially and on resize
+    checkScroll();
+    // Also need a small timeout for initial render layout shifts
+    const t = setTimeout(checkScroll, 100);
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [isRTL, currentLeagueId]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 250;
+      // In RTL or LTR, scrollBy({ left: X }) is physical.
+      // Negative left moves viewport left (reveals content on the physical left).
+      // Positive left moves viewport right (reveals content on the physical right).
+      const moveBy = direction === 'left' ? -scrollAmount : scrollAmount;
+      scrollContainerRef.current.scrollBy({ left: moveBy, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="w-full bg-[#7a1818] border-t border-white/10 shadow-inner">
-      <div className="max-w-5xl mx-auto px-2 sm:px-6">
-        <div className="flex overflow-x-auto hide-scrollbar py-2.5 gap-2 md:gap-3 items-center snap-x">
-          
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-1 sm:gap-2">
+        
+        {/* Left Physical Arrow (Appears on Right in RTL) */}
+        <button 
+          onClick={() => scroll('left')}
+          className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-all shadow-md ${showLeftArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          aria-label="Scroll left"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+
+        {/* Scrollable Container */}
+        <div 
+          ref={scrollContainerRef}
+          onScroll={checkScroll}
+          className="flex-1 flex overflow-x-auto scrollbar-thin-white pb-1.5 pt-1 gap-2 md:gap-3 items-center snap-x"
+        >
           {/* "All Matches" Button */}
           <Link
-            href={`/${currentDay ? `?day=${currentDay}` : ''}`}
+            href={basePath}
             className={`flex items-center whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold transition-all shrink-0 snap-start
               ${!currentLeagueId 
                 ? 'bg-white text-[#8B1E1E] shadow-md scale-105' 
-                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                : 'text-white/80 hover:bg-white/10 hover:text-white border border-transparent'
               }`}
           >
             {locale === 'ar' ? 'جميع المباريات' : 'All Matches'}
@@ -55,14 +125,11 @@ export default function LeagueNav() {
           {/* League Buttons */}
           {NAV_LEAGUES.map((league) => {
             const isActive = currentLeagueId === String(league.id);
-            const queryParams = new URLSearchParams();
-            if (currentDay) queryParams.set('day', currentDay);
-            queryParams.set('league', String(league.id));
 
             return (
               <Link
                 key={league.id}
-                href={`/?${queryParams.toString()}`}
+                href={`${basePath}?league=${league.id}`}
                 className={`flex items-center gap-2 whitespace-nowrap px-3 py-1.5 rounded-full text-xs md:text-sm font-semibold transition-all shrink-0 snap-start
                   ${isActive 
                     ? 'bg-white text-[#8B1E1E] shadow-md scale-105' 
@@ -83,6 +150,16 @@ export default function LeagueNav() {
             );
           })}
         </div>
+
+        {/* Right Physical Arrow (Appears on Left in RTL) */}
+        <button 
+          onClick={() => scroll('right')}
+          className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-all shadow-md ${showRightArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          aria-label="Scroll right"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
+
       </div>
     </div>
   );

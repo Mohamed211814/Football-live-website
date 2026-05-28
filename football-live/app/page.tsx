@@ -2,20 +2,13 @@ import { Suspense } from "react";
 import { fetchFixtures } from "./utils/api-football";
 import HomeDashboard from "./components/HomeDashboard";
 
-export default async function Home(props: { searchParams: Promise<{ day?: string }> }) {
-  const searchParams = await props.searchParams;
-  const dayParam = (searchParams?.day as "yesterday" | "today" | "tomorrow") || "today";
-
-  const targetDate = new Date();
-
-  if (dayParam === "yesterday") {
-    targetDate.setDate(targetDate.getDate() - 1);
-  } else if (dayParam === "tomorrow") {
-    targetDate.setDate(targetDate.getDate() + 1);
-  }
+export default async function Home() {
+  const dayParam = "today";
 
   // Fetch ALL matches for the day. Filtering will happen on the client.
-  const matchesData = await fetchFixtures(targetDate);
+  const matchesData = await fetchFixtures(0); // 0 = today
+  
+  const targetDate = new Date();
 
   return (
     <div className="py-5">

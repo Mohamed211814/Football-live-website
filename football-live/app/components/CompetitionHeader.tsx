@@ -11,7 +11,7 @@ interface CompetitionHeaderProps {
   liveCount: number;
 }
 
-export default function CompetitionHeader({ title, logoUrl, matchCount, liveCount }: CompetitionHeaderProps) {
+const CompetitionHeader = React.memo(function CompetitionHeader({ title, logoUrl, matchCount, liveCount }: CompetitionHeaderProps) {
   const { t, isRTL } = useLanguage();
 
   return (
@@ -58,4 +58,6 @@ export default function CompetitionHeader({ title, logoUrl, matchCount, liveCoun
       </div>
     </div>
   );
-}
+});
+
+export default CompetitionHeader;

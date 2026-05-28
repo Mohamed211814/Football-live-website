@@ -5,7 +5,9 @@ import MatchRow from "./MatchRow";
 import CompetitionHeader from "./CompetitionHeader";
 import { useLanguage } from "../context/LanguageContext";
 
-export default function CompetitionSection({ league }: { league: League }) {
+import React from 'react';
+
+const CompetitionSection = React.memo(function CompetitionSection({ league }: { league: League }) {
   const liveCount = league.matches.filter((m) => m.status === "live").length;
   const { locale } = useLanguage();
   
@@ -28,4 +30,6 @@ export default function CompetitionSection({ league }: { league: League }) {
       </div>
     </div>
   );
-}
+});
+
+export default CompetitionSection;

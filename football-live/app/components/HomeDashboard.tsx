@@ -6,7 +6,7 @@ import DateBar from "./DateBar";
 import DayTabs from "./DayTabs";
 import MatchList from "./MatchList";
 import HomeStats from "./HomeStats";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 interface HomeDashboardProps {
   initialMatchesData: League[];
@@ -19,8 +19,37 @@ export default function HomeDashboard({ initialMatchesData, targetDate, dayParam
   const leagueParam = searchParams.get('league');
   const sortParam = searchParams.get('sort');
 
+  const [liveMatchesData, setLiveMatchesData] = useState<League[]>(initialMatchesData);
+
+  // Sync state when initial data changes (e.g., navigating days)
+  useEffect(() => {
+    setLiveMatchesData(initialMatchesData);
+  }, [initialMatchesData]);
+
+  // Smart Polling for live matches
+  useEffect(() => {
+    // Only aggressive poll for "today"
+    if (dayParam !== "today") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/fixtures');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setLiveMatchesData(json.data);
+          }
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, 60000); // 60 seconds
+
+    return () => clearInterval(interval);
+  }, [dayParam]);
+
   const matchesData = useMemo(() => {
-    let data = [...initialMatchesData];
+    let data = [...liveMatchesData];
 
     // 1. Filter by league if selected
     if (leagueParam) {
@@ -48,7 +77,7 @@ export default function HomeDashboard({ initialMatchesData, targetDate, dayParam
     }
 
     return data;
-  }, [initialMatchesData, leagueParam, sortParam]);
+  }, [liveMatchesData, leagueParam, sortParam]);
 
   // Calculate stats based on the FILTERED data
   const totalMatches = matchesData.reduce(

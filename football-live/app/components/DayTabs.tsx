@@ -48,11 +48,13 @@ export default function DayTabs({ activeTab }: DayTabsProps) {
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1 py-1 -mx-1">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
+          const targetHref = tab.key === "today" ? "/" : `/day/${tab.key}`;
+          
           return (
             <Link
               key={tab.key}
               id={`tab-${tab.key}`}
-              href={`/?day=${tab.key}`}
+              href={targetHref}
               className={`
                 relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white
                 whitespace-nowrap shrink-0 cursor-pointer

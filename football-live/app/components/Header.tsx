@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useLanguage } from "../context/LanguageContext";
 import LeagueNav from "./LeagueNav";
@@ -66,7 +67,9 @@ export default function Header() {
       
       {/* Leagues Sub-Navbar */}
       <div className="w-full">
-        <LeagueNav />
+        <Suspense fallback={<div className="h-12 bg-[#7a1818] border-t border-white/10"></div>}>
+          <LeagueNav />
+        </Suspense>
       </div>
 
       {/* Bottom accent line */}

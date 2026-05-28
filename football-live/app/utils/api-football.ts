@@ -53,29 +53,53 @@ function mapMatchStatus(shortStatus: string): Match['status'] {
   return 'upcoming';
 }
 
-// Helper to format date object to YYYY-MM-DD
-function formatDateToYYYYMMDD(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+const TIMEZONE = 'Asia/Riyadh';
+
+// Format time relative to Mecca time
+function formatMatchTime(dateString: string): string {
+  const date = new Date(dateString);
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: TIMEZONE,
+  });
+  return formatter.format(date);
+}
+
+// Get YYYY-MM-DD for a specific day offset (-1, 0, 1) in Riyadh Time
+export function getTargetDateString(dayOffset: number): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + dayOffset);
+  
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  
+  const parts = formatter.formatToParts(d);
+  const month = parts.find(p => p.type === 'month')?.value;
+  const day = parts.find(p => p.type === 'day')?.value;
+  const year = parts.find(p => p.type === 'year')?.value;
+  
   return `${year}-${month}-${day}`;
 }
 
-export async function fetchFixtures(date: Date = new Date()): Promise<League[]> {
-  const dateString = formatDateToYYYYMMDD(date);
-  return withCache(`fixtures:${dateString}`, FIXTURES_TTL, () => _fetchFixtures(date, dateString));
+export async function fetchFixtures(dayOffset: number = 0): Promise<League[]> {
+  const dateString = getTargetDateString(dayOffset);
+  return withCache(`fixtures:${dateString}`, FIXTURES_TTL, () => _fetchFixtures(dateString));
 }
 
-async function _fetchFixtures(date: Date, dateString: string): Promise<League[]> {
+async function _fetchFixtures(dateString: string): Promise<League[]> {
   if (!API_KEY) {
     console.error('API_FOOTBALL_KEY is not set');
     throw new Error('API Key missing');
   }
 
-  // dateString is already passed in from the cache wrapper
-  
   try {
-    const response = await fetch(`${API_URL}/fixtures?date=${dateString}`, {
+    const response = await fetch(`${API_URL}/fixtures?date=${dateString}&timezone=${TIMEZONE}`, {
       method: 'GET',
       headers: {
         'x-rapidapi-host': 'v3.football.api-sports.io',
@@ -105,8 +129,7 @@ async function _fetchFixtures(date: Date, dateString: string): Promise<League[]>
 
     fixtures.forEach((fixture) => {
       const matchStatus = mapMatchStatus(fixture.fixture.status.short);
-      const matchTimeDate = new Date(fixture.fixture.date);
-      const matchTime = `${String(matchTimeDate.getHours()).padStart(2, '0')}:${String(matchTimeDate.getMinutes()).padStart(2, '0')}`;
+      const matchTime = formatMatchTime(fixture.fixture.date);
 
       const match: Match = {
         id: fixture.fixture.id,
@@ -195,7 +218,7 @@ async function _fetchFixtureDetails(id: string | number): Promise<MatchDetailsDa
   }
 
   try {
-    const response = await fetch(`${API_URL}/fixtures?id=${id}`, {
+    const response = await fetch(`${API_URL}/fixtures?id=${id}&timezone=${TIMEZONE}`, {
       method: 'GET',
       headers: {
         'x-rapidapi-host': 'v3.football.api-sports.io',
@@ -222,8 +245,7 @@ async function _fetchFixtureDetails(id: string | number): Promise<MatchDetailsDa
     const fixtureData: APIFixtureResponse = data.response[0];
 
     const matchStatus = mapMatchStatus(fixtureData.fixture.status.short);
-    const matchTimeDate = new Date(fixtureData.fixture.date);
-    const matchTime = `${String(matchTimeDate.getHours()).padStart(2, '0')}:${String(matchTimeDate.getMinutes()).padStart(2, '0')}`;
+    const matchTime = formatMatchTime(fixtureData.fixture.date);
 
     const match: Match = {
       id: fixtureData.fixture.id,

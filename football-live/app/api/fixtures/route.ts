@@ -13,15 +13,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const dateParam = searchParams.get('date');
 
-    let targetDate = new Date();
+    let offset = 0;
     if (dateParam) {
       const parsed = new Date(dateParam);
       if (!isNaN(parsed.getTime())) {
-        targetDate = parsed;
+        // Calculate the difference in days from today
+        const today = new Date();
+        const diffTime = parsed.getTime() - today.getTime();
+        offset = Math.round(diffTime / (1000 * 60 * 60 * 24));
       }
     }
 
-    const leagues = await fetchFixtures(targetDate);
+    const leagues = await fetchFixtures(offset);
 
     return NextResponse.json(
       { success: true, data: leagues },

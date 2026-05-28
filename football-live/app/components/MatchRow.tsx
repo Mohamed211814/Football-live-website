@@ -48,7 +48,7 @@ function TeamLogo({ name, logoUrl }: { name: string; logoUrl?: string }) {
   );
 }
 
-export default function MatchRow({ match }: MatchRowProps) {
+const MatchRow = React.memo(function MatchRow({ match }: MatchRowProps) {
   const isLive = match.status === 'live';
   const isFinished = match.status === 'finished';
   const { t, isRTL, locale } = useLanguage();
@@ -132,4 +132,6 @@ export default function MatchRow({ match }: MatchRowProps) {
       </div>
     </Link>
   );
-}
+});
+
+export default MatchRow;
