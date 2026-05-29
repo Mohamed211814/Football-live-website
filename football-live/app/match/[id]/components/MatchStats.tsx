@@ -2,7 +2,7 @@
 
 import { APIStatistics } from "../../../types";
 import { useLanguage } from "../../../context/LanguageContext";
-import { getArabicTeamName } from "../../../utils/team-mapper";
+import { getArabicTeamName, getEnglishTeamName, getTeamLogo } from "../../../utils/team-mapper";
 import { getArabicStatName } from "../../../utils/translation-helper";
 import Image from "next/image";
 
@@ -23,27 +23,27 @@ export default function MatchStats({ statistics }: { statistics: APIStatistics[]
         <div className="flex flex-col items-center gap-2">
           <div className="relative w-12 h-12 md:w-16 md:h-16">
             <Image 
-              src={statistics[0].team.logo} 
+              src={getTeamLogo(statistics[0].team.name, statistics[0].team.logo) || statistics[0].team.logo} 
               className="object-contain drop-shadow-md" 
-              alt={locale === 'ar' ? getArabicTeamName(statistics[0].team.name) : statistics[0].team.name} 
+              alt={locale === 'ar' ? getArabicTeamName(statistics[0].team.name) : getEnglishTeamName(statistics[0].team.name)} 
               fill
               sizes="(max-width: 768px) 48px, 64px"
             />
           </div>
-          <span className="font-extrabold text-xs text-gray-500">{locale === 'ar' ? getArabicTeamName(statistics[0].team.name) : statistics[0].team.name}</span>
+          <span className="font-extrabold text-xs text-gray-500">{locale === 'ar' ? getArabicTeamName(statistics[0].team.name) : getEnglishTeamName(statistics[0].team.name)}</span>
         </div>
         <div className="text-sm font-black text-gray-300 tracking-widest">{t.common.vs}</div>
         <div className="flex flex-col items-center gap-2">
           <div className="relative w-12 h-12 md:w-16 md:h-16">
             <Image 
-              src={statistics[1].team.logo} 
+              src={getTeamLogo(statistics[1].team.name, statistics[1].team.logo) || statistics[1].team.logo} 
               className="object-contain drop-shadow-md" 
-              alt={locale === 'ar' ? getArabicTeamName(statistics[1].team.name) : statistics[1].team.name} 
+              alt={locale === 'ar' ? getArabicTeamName(statistics[1].team.name) : getEnglishTeamName(statistics[1].team.name)} 
               fill
               sizes="(max-width: 768px) 48px, 64px"
             />
           </div>
-          <span className="font-extrabold text-xs text-gray-500">{locale === 'ar' ? getArabicTeamName(statistics[1].team.name) : statistics[1].team.name}</span>
+          <span className="font-extrabold text-xs text-gray-500">{locale === 'ar' ? getArabicTeamName(statistics[1].team.name) : getEnglishTeamName(statistics[1].team.name)}</span>
         </div>
       </div>
 

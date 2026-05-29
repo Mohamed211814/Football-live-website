@@ -5,6 +5,7 @@ export interface Match {
   homeScore?: number;
   awayScore?: number;
   time: string;
+  timestamp?: number;
   status: "live" | "upcoming" | "finished";
   league: string;
   leagueEn?: string;

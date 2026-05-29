@@ -4,6 +4,7 @@ import { League } from "../types";
 import MatchRow from "./MatchRow";
 import CompetitionHeader from "./CompetitionHeader";
 import { useLanguage } from "../context/LanguageContext";
+import { getCompetitionName } from "../utils/competition-mapper";
 
 import React from 'react';
 
@@ -11,7 +12,7 @@ const CompetitionSection = React.memo(function CompetitionSection({ league }: { 
   const liveCount = league.matches.filter((m) => m.status === "live").length;
   const { locale } = useLanguage();
   
-  const displayLeague = locale === 'ar' ? league.name : (league.nameEn || league.name);
+  const displayLeague = getCompetitionName(league.id, league.name, locale);
 
   return (
     <div className="fade-in-up bg-white rounded-xl border border-gray-200/80 overflow-hidden shadow-sm">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "../context/LanguageContext";
+import { useSearchParams } from "next/navigation";
 
 type TabKey = "yesterday" | "today" | "tomorrow";
 
@@ -11,6 +12,7 @@ interface DayTabsProps {
 
 export default function DayTabs({ activeTab }: DayTabsProps) {
   const { t } = useLanguage();
+  const searchParams = useSearchParams();
 
   const tabs = [
     {
@@ -48,7 +50,8 @@ export default function DayTabs({ activeTab }: DayTabsProps) {
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1 py-1 -mx-1">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
-          const targetHref = tab.key === "today" ? "/" : `/day/${tab.key}`;
+          const queryString = searchParams.toString() ? `?${searchParams.toString()}` : "";
+          const targetHref = tab.key === "today" ? `/${queryString}` : `/day/${tab.key}${queryString}`;
           
           return (
             <Link

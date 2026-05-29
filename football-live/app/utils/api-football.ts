@@ -38,7 +38,8 @@ const PRIORITY_LEAGUE_IDS = [
   417,  // 24. الدوري البحريني تفادي الهبوط
   41,   // 25. الدوري الإنجليزي الدرجة الثالثة (League One)
   253,  // 26. الدوري الأمريكي MLS
-  79    // 27. الدوري الألماني تفادي الهبوط (2. Bundesliga)
+  79,   // 27. الدوري الألماني تفادي الهبوط (2. Bundesliga)
+  973   // 28. كأس أمم أفريقيا للناشئين تحت 17 سنة
 ];
 
 
@@ -53,9 +54,9 @@ function mapMatchStatus(shortStatus: string): Match['status'] {
   return 'upcoming';
 }
 
-const TIMEZONE = 'Asia/Riyadh';
+const TIMEZONE = 'Africa/Casablanca';
 
-// Format time relative to Mecca time
+// Format time relative to Mecca time (Now Moroccan time)
 function formatMatchTime(dateString: string): string {
   const date = new Date(dateString);
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -114,9 +115,19 @@ async function _fetchFixtures(dateString: string): Promise<League[]> {
 
     const data = await response.json();
     
-    if (data.errors && Object.keys(data.errors).length > 0) {
-      console.error('API-Football Error:', data.errors);
-      throw new Error('Failed to fetch data from API-Football');
+    if (data.errors) {
+      const isArray = Array.isArray(data.errors);
+      const hasErrors = isArray ? data.errors.length > 0 : Object.keys(data.errors).length > 0;
+      
+      if (hasErrors) {
+        const errorString = JSON.stringify(data.errors);
+        // Free plan limits (like timezone rollovers pushing dates too far ahead) are expected,
+        // so we can suppress the scary terminal error.
+        if (!errorString.includes('Free plans')) {
+          console.error('API-Football Error:', errorString);
+        }
+        return []; // Return empty array to prevent crashing the server
+      }
     }
 
     let fixtures: APIFixtureResponse[] = data.response || [];
@@ -140,6 +151,7 @@ async function _fetchFixtures(dateString: string): Promise<League[]> {
         homeScore: fixture.goals.home !== null ? fixture.goals.home : undefined,
         awayScore: fixture.goals.away !== null ? fixture.goals.away : undefined,
         time: matchStatus === 'live' ? String(fixture.fixture.status.elapsed) + "'" : matchTime,
+        timestamp: fixture.fixture.timestamp * 1000,
         status: matchStatus,
         league: getArabicCompetitionName(fixture.league.id, fixture.league.name),
         leagueEn: fixture.league.name,
@@ -233,9 +245,14 @@ async function _fetchFixtureDetails(id: string | number): Promise<MatchDetailsDa
 
     const data = await response.json();
 
-    if (data.errors && Object.keys(data.errors).length > 0) {
-      console.error('API-Football Error:', data.errors);
-      throw new Error('Failed to fetch fixture details');
+    if (data.errors) {
+      const isArray = Array.isArray(data.errors);
+      const hasErrors = isArray ? data.errors.length > 0 : Object.keys(data.errors).length > 0;
+      
+      if (hasErrors) {
+        console.error('API-Football Error:', JSON.stringify(data.errors));
+        throw new Error('Failed to fetch fixture details');
+      }
     }
 
     if (!data.response || data.response.length === 0) {
@@ -256,6 +273,7 @@ async function _fetchFixtureDetails(id: string | number): Promise<MatchDetailsDa
       homeScore: fixtureData.goals.home !== null ? fixtureData.goals.home : undefined,
       awayScore: fixtureData.goals.away !== null ? fixtureData.goals.away : undefined,
       time: matchStatus === 'live' ? String(fixtureData.fixture.status.elapsed) + "'" : matchTime,
+      timestamp: fixtureData.fixture.timestamp * 1000,
       status: matchStatus,
       league: getArabicCompetitionName(fixtureData.league.id, fixtureData.league.name),
       leagueEn: fixtureData.league.name,

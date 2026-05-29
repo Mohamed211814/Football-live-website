@@ -2,16 +2,21 @@
 
 import { Match } from "../../../types";
 import { useLanguage } from "../../../context/LanguageContext";
-import { getArabicTeamName } from "../../../utils/team-mapper";
+import { getArabicTeamName, getEnglishTeamName, getTeamLogo } from "../../../utils/team-mapper";
+import { getCompetitionName } from "../../../utils/competition-mapper";
+import LocalTime from "../../../components/LocalTime";
 import Image from "next/image";
 
 export default function MatchHeader({ match }: { match: Match }) {
   const isLive = match.status === "live";
   const { t, locale, isRTL } = useLanguage();
 
-  const displayLeague = locale === 'ar' ? match.league : (match.leagueEn || match.league);
-  const displayHomeTeam = locale === 'ar' ? getArabicTeamName(match.homeTeam) : match.homeTeam;
-  const displayAwayTeam = locale === 'ar' ? getArabicTeamName(match.awayTeam) : match.awayTeam;
+  const displayLeague = getCompetitionName(undefined, match.league, locale);
+  const displayHomeTeam = locale === 'ar' ? getArabicTeamName(match.homeTeam) : getEnglishTeamName(match.homeTeam);
+  const displayAwayTeam = locale === 'ar' ? getArabicTeamName(match.awayTeam) : getEnglishTeamName(match.awayTeam);
+
+  const homeLogo = getTeamLogo(match.homeTeam, match.homeLogo);
+  const awayLogo = getTeamLogo(match.awayTeam, match.awayLogo);
 
   return (
     <div className="relative overflow-hidden rounded-2xl text-white p-6 md:p-8 mt-4 shadow-xl border border-red-900/20 bg-gradient-to-br from-[#8B1E1E] via-[#aa2222] to-[#4a0d0d]" dir={isRTL ? "rtl" : "ltr"}>
@@ -42,9 +47,9 @@ export default function MatchHeader({ match }: { match: Match }) {
         <div className="flex flex-col items-center w-[30%]">
           <div className="relative w-20 h-20 md:w-28 md:h-28 mb-3 group">
             <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-300"></div>
-            {match.homeLogo ? (
+            {homeLogo ? (
               <Image 
-                src={match.homeLogo} 
+                src={homeLogo} 
                 alt={displayHomeTeam} 
                 fill
                 className="object-contain drop-shadow-2xl relative z-10 transform group-hover:scale-110 transition-transform duration-300"
@@ -61,7 +66,9 @@ export default function MatchHeader({ match }: { match: Match }) {
         <div className="flex flex-col items-center justify-center w-[40%]">
           {match.status === "upcoming" ? (
             <div className="bg-black/30 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl shadow-xl">
-              <span className="text-3xl md:text-5xl font-black drop-shadow-lg tabular-nums tracking-wider">{match.time}</span>
+              <span className="text-3xl md:text-5xl font-black drop-shadow-lg tabular-nums tracking-wider">
+                <LocalTime serverTime={match.time} timestamp={match.timestamp} />
+              </span>
             </div>
           ) : (
             <div className="flex items-center gap-3 md:gap-6">
@@ -81,9 +88,9 @@ export default function MatchHeader({ match }: { match: Match }) {
         <div className="flex flex-col items-center w-[30%]">
           <div className="relative w-20 h-20 md:w-28 md:h-28 mb-3 group">
             <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-300"></div>
-            {match.awayLogo ? (
+            {awayLogo ? (
               <Image 
-                src={match.awayLogo} 
+                src={awayLogo} 
                 alt={displayAwayTeam} 
                 fill
                 className="object-contain drop-shadow-2xl relative z-10 transform group-hover:scale-110 transition-transform duration-300"

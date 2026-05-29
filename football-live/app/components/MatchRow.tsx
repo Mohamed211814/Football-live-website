@@ -5,7 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Match } from '../types';
 import { useLanguage } from "../context/LanguageContext";
-import { getArabicTeamName } from '../utils/team-mapper';
+import { getArabicTeamName, getEnglishTeamName, getTeamLogo } from '../utils/team-mapper';
+import LocalTime from './LocalTime';
 
 interface MatchRowProps {
   match: Match;
@@ -13,6 +14,7 @@ interface MatchRowProps {
 
 function TeamLogo({ name, logoUrl }: { name: string; logoUrl?: string }) {
   const [imgError, setImgError] = useState(false);
+  const resolvedLogoUrl = getTeamLogo(name, logoUrl);
 
   const colors = [
     "from-blue-500 to-blue-700",
@@ -26,11 +28,11 @@ function TeamLogo({ name, logoUrl }: { name: string; logoUrl?: string }) {
   ];
   const index = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0) % colors.length;
 
-  if (logoUrl && !imgError) {
+  if (resolvedLogoUrl && !imgError) {
     return (
       <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex items-center justify-center flex-shrink-0">
         <Image 
-          src={logoUrl} 
+          src={resolvedLogoUrl} 
           alt={name} 
           fill
           onError={() => setImgError(true)}
@@ -66,20 +68,16 @@ const MatchRow = React.memo(function MatchRow({ match }: MatchRowProps) {
   }
 
   // Check if match is starting soon (within 30 min)
-  if (match.status === 'upcoming') {
-    const now = new Date();
-    const [hours, minutes] = match.time.split(':').map(Number);
-    const matchDate = new Date();
-    matchDate.setHours(hours, minutes, 0, 0);
-    const diffMinutes = (matchDate.getTime() - now.getTime()) / (1000 * 60);
+  if (match.status === 'upcoming' && match.timestamp) {
+    const diffMinutes = (match.timestamp - Date.now()) / (1000 * 60);
     if (diffMinutes > 0 && diffMinutes <= 30) {
       statusText = t.match.startingSoon;
       statusColor = 'text-green-600 font-semibold';
     }
   }
 
-  const displayHomeTeam = locale === 'ar' ? getArabicTeamName(match.homeTeam) : match.homeTeam;
-  const displayAwayTeam = locale === 'ar' ? getArabicTeamName(match.awayTeam) : match.awayTeam;
+  const displayHomeTeam = locale === 'ar' ? getArabicTeamName(match.homeTeam) : getEnglishTeamName(match.homeTeam);
+  const displayAwayTeam = locale === 'ar' ? getArabicTeamName(match.awayTeam) : getEnglishTeamName(match.awayTeam);
 
   return (
     <Link 
@@ -101,7 +99,9 @@ const MatchRow = React.memo(function MatchRow({ match }: MatchRowProps) {
       <div className="flex flex-col items-center justify-center px-1 sm:px-2 md:px-4 flex-shrink-0 min-w-[56px] sm:min-w-[68px] md:min-w-[88px]">
         {match.status === 'upcoming' ? (
           <>
-            <span className="text-[11px] sm:text-sm md:text-base font-bold text-gray-500 tabular-nums">{match.time}</span>
+            <span className="text-[11px] sm:text-sm md:text-base font-bold text-gray-500 tabular-nums">
+              <LocalTime serverTime={match.time} timestamp={match.timestamp} />
+            </span>
             <span className={`text-[8px] sm:text-[10px] md:text-[11px] mt-0.5 whitespace-nowrap ${statusColor}`}>{statusText}</span>
           </>
         ) : (

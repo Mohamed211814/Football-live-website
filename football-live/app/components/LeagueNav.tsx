@@ -27,6 +27,7 @@ const NAV_LEAGUES = [
   { id: 79, nameAr: 'الدرجة الثانية (ألمانيا)', nameEn: '2. Bundesliga' },
   { id: 41, nameAr: 'الدرجة الثالثة (إنجلترا)', nameEn: 'League One' },
   { id: 921, nameAr: 'أوروبا تحت 17', nameEn: 'UEFA U17' },
+  { id: 973, nameAr: 'كأس أمم أفريقيا للناشئين تحت 17 سنة', nameEn: 'CAF U-17' },
   { id: 13, nameAr: 'كوبا ليبرتادوريس', nameEn: 'Copa Libertadores' },
   { id: 11, nameAr: 'كوبا سود أمريكانا', nameEn: 'Copa Sudamericana' },
 ];
@@ -45,33 +46,40 @@ export default function LeagueNav() {
 
   const checkScroll = () => {
     if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const firstChild = container.firstElementChild;
-      const lastChild = container.lastElementChild;
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       
-      if (!firstChild || !lastChild) return;
+      if (scrollWidth <= clientWidth + 2) {
+        setShowLeftArrow(false);
+        setShowRightArrow(false);
+        return;
+      }
 
-      const containerRect = container.getBoundingClientRect();
-      const firstRect = firstChild.getBoundingClientRect();
-      const lastRect = lastChild.getBoundingClientRect();
+      const absScroll = Math.abs(Math.round(scrollLeft));
+      const maxScroll = scrollWidth - clientWidth;
+      
+      const isAtStart = absScroll <= 2;
+      const isAtEnd = absScroll >= maxScroll - 2;
 
-      // In RTL, the first DOM element is painted on the right.
-      const leftmostRect = isRTL ? lastRect : firstRect;
-      const rightmostRect = isRTL ? firstRect : lastRect;
-
-      // Allow 1px tolerance for rounding
-      const canScrollLeft = leftmostRect.left < containerRect.left - 1;
-      const canScrollRight = rightmostRect.right > containerRect.right + 1;
-
-      setShowLeftArrow(canScrollLeft);
-      setShowRightArrow(canScrollRight);
+      if (isRTL) {
+        // In RTL, Start is physical Right, End is physical Left
+        setShowRightArrow(!isAtStart); // Show right arrow if NOT at start
+        setShowLeftArrow(!isAtEnd);    // Show left arrow if NOT at end
+      } else {
+        // In LTR, Start is physical Left, End is physical Right
+        setShowLeftArrow(!isAtStart);  // Show left arrow if NOT at start
+        setShowRightArrow(!isAtEnd);   // Show right arrow if NOT at end
+      }
     }
   };
 
   useEffect(() => {
-    // Check initially and on resize
+    // Restore scroll position on mount
+    const savedScroll = sessionStorage.getItem('leagueNavScroll');
+    if (savedScroll && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = parseInt(savedScroll, 10);
+    }
+
     checkScroll();
-    // Also need a small timeout for initial render layout shifts
     const t = setTimeout(checkScroll, 100);
     window.addEventListener('resize', checkScroll);
     return () => {
@@ -80,12 +88,16 @@ export default function LeagueNav() {
     };
   }, [isRTL, currentLeagueId]);
 
+  const handleScroll = () => {
+    checkScroll();
+    if (scrollContainerRef.current) {
+      sessionStorage.setItem('leagueNavScroll', scrollContainerRef.current.scrollLeft.toString());
+    }
+  };
+
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = 250;
-      // In RTL or LTR, scrollBy({ left: X }) is physical.
-      // Negative left moves viewport left (reveals content on the physical left).
-      // Positive left moves viewport right (reveals content on the physical right).
       const moveBy = direction === 'left' ? -scrollAmount : scrollAmount;
       scrollContainerRef.current.scrollBy({ left: moveBy, behavior: 'smooth' });
     }
@@ -93,9 +105,10 @@ export default function LeagueNav() {
 
   return (
     <div className="w-full bg-[#7a1818] border-t border-white/10 shadow-inner">
-      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-1 sm:gap-2">
+      {/* Force LTR here so the DOM order matches physical screen position (Left arrow = left side) */}
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-1 sm:gap-2" dir="ltr">
         
-        {/* Left Physical Arrow (Appears on Right in RTL) */}
+        {/* Physical Left Arrow */}
         <button 
           onClick={() => scroll('left')}
           className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-all shadow-md ${showLeftArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -107,8 +120,9 @@ export default function LeagueNav() {
         {/* Scrollable Container */}
         <div 
           ref={scrollContainerRef}
-          onScroll={checkScroll}
-          className="flex-1 flex overflow-x-auto scrollbar-thin-white pb-1.5 pt-1 gap-2 md:gap-3 items-center snap-x"
+          onScroll={handleScroll}
+          dir={isRTL ? 'rtl' : 'ltr'}
+          className="flex-1 flex overflow-x-auto scrollbar-thin-white px-2 pb-1.5 pt-1 gap-2 md:gap-3 items-center snap-x"
         >
           {/* "All Matches" Button */}
           <Link
@@ -151,7 +165,7 @@ export default function LeagueNav() {
           })}
         </div>
 
-        {/* Right Physical Arrow (Appears on Left in RTL) */}
+        {/* Physical Right Arrow */}
         <button 
           onClick={() => scroll('right')}
           className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-all shadow-md ${showRightArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}

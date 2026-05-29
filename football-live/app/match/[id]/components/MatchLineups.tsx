@@ -2,7 +2,7 @@
 
 import { APILineup } from "../../../types";
 import { useLanguage } from "../../../context/LanguageContext";
-import { getArabicTeamName } from "../../../utils/team-mapper";
+import { getArabicTeamName, getEnglishTeamName, getTeamLogo } from "../../../utils/team-mapper";
 import Image from "next/image";
 
 export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
@@ -22,15 +22,15 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         <div className="flex items-center gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
           <div className="relative w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
             <Image 
-              src={home.team.logo} 
+              src={getTeamLogo(home.team.name, home.team.logo) || home.team.logo} 
               className="object-contain p-1" 
-              alt={locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name} 
+              alt={locale === 'ar' ? getArabicTeamName(home.team.name) : getEnglishTeamName(home.team.name)} 
               fill
               sizes="(max-width: 768px) 64px, 64px"
             />
           </div>
           <div>
-            <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(home.team.name) : home.team.name}</h3>
+            <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(home.team.name) : getEnglishTeamName(home.team.name)}</h3>
             <div className="inline-block mt-1 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full" dir="ltr">
               {home.formation}
             </div>
@@ -74,15 +74,15 @@ export default function MatchLineups({ lineups }: { lineups: APILineup[] }) {
         <div className="flex items-center gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
           <div className="relative w-16 h-16 bg-white rounded-full p-2 shadow-sm flex items-center justify-center shrink-0">
             <Image 
-              src={away.team.logo} 
+              src={getTeamLogo(away.team.name, away.team.logo) || away.team.logo} 
               className="object-contain p-1" 
-              alt={locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name} 
+              alt={locale === 'ar' ? getArabicTeamName(away.team.name) : getEnglishTeamName(away.team.name)} 
               fill
               sizes="(max-width: 768px) 64px, 64px"
             />
           </div>
           <div>
-            <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(away.team.name) : away.team.name}</h3>
+            <h3 className="font-black text-lg text-gray-800">{locale === 'ar' ? getArabicTeamName(away.team.name) : getEnglishTeamName(away.team.name)}</h3>
             <div className="inline-block mt-1 px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full" dir="ltr">
               {away.formation}
             </div>

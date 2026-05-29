@@ -105,9 +105,9 @@ body, * {
   display: none;
 }
 
-/* Custom 2px White Scrollbar */
+/* Custom 5px White Scrollbar */
 .scrollbar-thin-white::-webkit-scrollbar {
-  height: 2px;
+  height: 5px;
 }
 .scrollbar-thin-white::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
